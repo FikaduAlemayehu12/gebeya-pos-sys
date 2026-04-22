@@ -2,26 +2,34 @@ import { ReactNode, useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, ShoppingCart, Package, Users, BarChart3,
-  CreditCard, Menu, X, ChevronDown, Bell, Search, LogOut, Shield, Briefcase
+  CreditCard, Menu, Bell, Search, LogOut, Shield, Briefcase,
+  Wallet, Truck, Building2, FileSearch, Sparkles
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import NotificationPanel from '@/components/NotificationPanel';
 import ExchangeRateDisplay from '@/components/ExchangeRateDisplay';
 import CurrencySwitcher from '@/components/CurrencySwitcher';
 import { supabase } from '@/integrations/supabase/client';
 
-type AppRole = 'admin' | 'cashier' | 'inventory_manager' | 'hr_admin' | 'payroll_officer' | 'manager' | 'employee';
+type AppRole =
+  | 'admin' | 'cashier' | 'inventory_manager' | 'hr_admin' | 'payroll_officer'
+  | 'manager' | 'employee' | 'finance_manager' | 'auditor' | 'branch_manager'
+  | 'procurement' | 'user';
 
 const NAV_ITEMS: { path: string; label: string; labelAm: string; icon: any; roles?: AppRole[]; requireFullAccess?: boolean }[] = [
   { path: '/', label: 'Dashboard', labelAm: 'ዳሽቦርድ', icon: LayoutDashboard },
   { path: '/pos', label: 'POS / Sales', labelAm: 'ሽያጭ', icon: ShoppingCart, roles: ['admin', 'cashier'] },
-  { path: '/inventory', label: 'Inventory', labelAm: 'እቃዎች', icon: Package, roles: ['admin', 'inventory_manager'] },
+  { path: '/inventory', label: 'Inventory', labelAm: 'እቃዎች', icon: Package, roles: ['admin', 'inventory_manager', 'procurement'] },
   { path: '/customers', label: 'Customers', labelAm: 'ደንበኞች', icon: Users, roles: ['admin', 'cashier'] },
   { path: '/credit', label: 'Credit Sales', labelAm: 'ብድር', icon: CreditCard, roles: ['admin', 'cashier'], requireFullAccess: true },
   { path: '/hr', label: 'HR & Payroll', labelAm: 'ሰራተኛ', icon: Briefcase, roles: ['admin', 'hr_admin', 'payroll_officer', 'manager', 'employee'] },
-  { path: '/reports', label: 'Reports', labelAm: 'ሪፖርቶች', icon: BarChart3, roles: ['admin'], requireFullAccess: true },
+  { path: '/finance', label: 'Finance', labelAm: 'ፋይናንስ', icon: Wallet, roles: ['admin', 'finance_manager', 'auditor'] },
+  { path: '/procurement', label: 'Procurement', labelAm: 'ግዢ', icon: Truck, roles: ['admin', 'procurement', 'inventory_manager'] },
+  { path: '/branches', label: 'Branches', labelAm: 'ቅርንጫፎች', icon: Building2, roles: ['admin', 'hr_admin', 'manager'] },
+  { path: '/reports', label: 'Reports', labelAm: 'ሪፖርቶች', icon: BarChart3, roles: ['admin', 'manager', 'finance_manager'], requireFullAccess: true },
+  { path: '/audit', label: 'Audit', labelAm: 'ኦዲት', icon: FileSearch, roles: ['admin', 'auditor'] },
+  { path: '/copilot', label: 'ERP Copilot', labelAm: 'ኮፓይለት', icon: Sparkles },
   { path: '/admin', label: 'Admin', labelAm: 'አስተዳዳሪ', icon: Shield, roles: ['admin'] },
 ];
 
