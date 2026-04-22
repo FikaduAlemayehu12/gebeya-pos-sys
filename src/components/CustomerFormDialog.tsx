@@ -146,7 +146,7 @@ export default function CustomerFormDialog({
     }
 
     if (isEdit && customer) {
-      const { error } = await supabase.from('customers').update(payload).eq('id', customer.id);
+      const { error } = await supabase.from('customers').update(payload as any).eq('id', customer.id);
       if (error) { toast({ title: 'Error updating', description: error.message, variant: 'destructive' }); }
       else { toast({ title: '✅ Customer updated!' }); setOpen(false); onSuccess(); }
     } else {
