@@ -98,10 +98,10 @@ export default function Procurement() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="Active Suppliers" value={totals.activeSuppliers} icon={Award} variant="success" />
-        <StatCard label="Active POs" value={totals.activePOs} icon={Package} variant="info" />
-        <StatCard label="Pending Approval" value={totals.pending} icon={Truck} variant="warning" />
-        <StatCard label="Total Spend" value={fmt(totals.totalSpend)} icon={Star} variant="default" />
+        <StatCard title="Active Suppliers" value={String(totals.activeSuppliers)} icon={Award} variant="success" />
+        <StatCard title="Active POs" value={String(totals.activePOs)} icon={Package} variant="primary" />
+        <StatCard title="Pending Approval" value={String(totals.pending)} icon={Truck} variant="warning" />
+        <StatCard title="Total Spend" value={fmt(totals.totalSpend)} icon={Star} variant="default" />
       </div>
 
       <Tabs defaultValue="pos" className="space-y-4">
@@ -119,15 +119,15 @@ export default function Procurement() {
                 <DialogContent>
                   <DialogHeader><DialogTitle>New Purchase Order</DialogTitle></DialogHeader>
                   <div className="space-y-3">
-                    <div><Label>PO Number</Label><Input value={poForm.po_number} onChange={(e) => setPoForm({ ...poForm, po_number: e.target.value })} placeholder="PO-2026-001" /></div>
+                    <div><Label>PO Number</Label><Input value={String(poForm.po_number)} onChange={(e) => setPoForm({ ...poForm, po_number: e.target.value })} placeholder="PO-2026-001" /></div>
                     <div><Label>Supplier</Label>
-                      <Select value={poForm.supplier_id} onValueChange={(v) => setPoForm({ ...poForm, supplier_id: v })}>
+                      <Select value={String(poForm.supplier_id)} onValueChange={(v) => setPoForm({ ...poForm, supplier_id: v })}>
                         <SelectTrigger><SelectValue placeholder="Select supplier" /></SelectTrigger>
-                        <SelectContent>{suppliers.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
+                        <SelectContent>{suppliers.map(s => <SelectItem key={s.id} value={String(s.id)}>{s.name}</SelectItem>)}</SelectContent>
                       </Select>
                     </div>
-                    <div><Label>Subtotal (ETB)</Label><Input type="number" value={poForm.total} onChange={(e) => setPoForm({ ...poForm, total: e.target.value })} /></div>
-                    <div><Label>Notes</Label><Textarea value={poForm.notes} onChange={(e) => setPoForm({ ...poForm, notes: e.target.value })} /></div>
+                    <div><Label>Subtotal (ETB)</Label><Input type="number" value={String(poForm.total)} onChange={(e) => setPoForm({ ...poForm, total: e.target.value })} /></div>
+                    <div><Label>Notes</Label><Textarea value={String(poForm.notes)} onChange={(e) => setPoForm({ ...poForm, notes: e.target.value })} /></div>
                   </div>
                   <DialogFooter><Button onClick={addPO}>Create</Button></DialogFooter>
                 </DialogContent>
@@ -179,12 +179,12 @@ export default function Procurement() {
                 <DialogContent>
                   <DialogHeader><DialogTitle>New Supplier</DialogTitle></DialogHeader>
                   <div className="space-y-3">
-                    <div><Label>Name</Label><Input value={supForm.name} onChange={(e) => setSupForm({ ...supForm, name: e.target.value })} /></div>
-                    <div><Label>Code</Label><Input value={supForm.code} onChange={(e) => setSupForm({ ...supForm, code: e.target.value })} placeholder="SUP-001" /></div>
-                    <div><Label>Category</Label><Input value={supForm.category} onChange={(e) => setSupForm({ ...supForm, category: e.target.value })} /></div>
+                    <div><Label>Name</Label><Input value={String(supForm.name)} onChange={(e) => setSupForm({ ...supForm, name: e.target.value })} /></div>
+                    <div><Label>Code</Label><Input value={String(supForm.code)} onChange={(e) => setSupForm({ ...supForm, code: e.target.value })} placeholder="SUP-001" /></div>
+                    <div><Label>Category</Label><Input value={String(supForm.category)} onChange={(e) => setSupForm({ ...supForm, category: e.target.value })} /></div>
                     <div className="grid grid-cols-2 gap-3">
-                      <div><Label>Phone</Label><Input value={supForm.phone} onChange={(e) => setSupForm({ ...supForm, phone: e.target.value })} /></div>
-                      <div><Label>Email</Label><Input value={supForm.email} onChange={(e) => setSupForm({ ...supForm, email: e.target.value })} /></div>
+                      <div><Label>Phone</Label><Input value={String(supForm.phone)} onChange={(e) => setSupForm({ ...supForm, phone: e.target.value })} /></div>
+                      <div><Label>Email</Label><Input value={String(supForm.email)} onChange={(e) => setSupForm({ ...supForm, email: e.target.value })} /></div>
                     </div>
                   </div>
                   <DialogFooter><Button onClick={addSupplier}>Create</Button></DialogFooter>

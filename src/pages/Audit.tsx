@@ -57,15 +57,15 @@ export default function Audit() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="Total Events" value={stats.total} icon={Activity} variant="info" />
-        <StatCard label="Today" value={stats.today} icon={ClipboardList} variant="default" />
-        <StatCard label="Warnings" value={stats.warnings} icon={AlertTriangle} variant="warning" />
-        <StatCard label="Critical" value={stats.critical} icon={ShieldAlert} variant="destructive" />
+        <StatCard title="Total Events" value={String(stats.total)} icon={Activity} variant="primary" />
+        <StatCard title="Today" value={String(stats.today)} icon={ClipboardList} variant="default" />
+        <StatCard title="Warnings" value={String(stats.warnings)} icon={AlertTriangle} variant="warning" />
+        <StatCard title="Critical" value={String(stats.critical)} icon={ShieldAlert} variant="destructive" />
       </div>
 
       <div className="flex gap-3 items-center flex-wrap">
-        <Input placeholder="Filter by action / entity..." value={filter} onChange={(e) => setFilter(e.target.value)} className="max-w-sm" />
-        <Select value={severity} onValueChange={setSeverity}>
+        <Input placeholder="Filter by action / entity..." value={String(filter)} onChange={(e) => setFilter(e.target.value)} className="max-w-sm" />
+        <Select value={String(severity)} onValueChange={setSeverity}>
           <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All severities</SelectItem>

@@ -127,10 +127,10 @@ export default function Finance() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="Total Assets" value={fmt(totals.assets)} icon={Building2} variant="success" />
-        <StatCard label="Liabilities" value={fmt(totals.liabilities)} icon={TrendingDown} variant="warning" />
-        <StatCard label="Revenue" value={fmt(totals.revenue)} icon={TrendingUp} variant="info" />
-        <StatCard label="Pending Approvals" value={`${totals.pending} • ${fmt(totals.pendingValue)}`} icon={Clock} variant="default" />
+        <StatCard title="Total Assets" value={fmt(totals.assets)} icon={Building2} variant="success" />
+        <StatCard title="Liabilities" value={fmt(totals.liabilities)} icon={TrendingDown} variant="warning" />
+        <StatCard title="Revenue" value={fmt(totals.revenue)} icon={TrendingUp} variant="primary" />
+        <StatCard title="Pending Approvals" value={`${totals.pending} • ${fmt(totals.pendingValue)}`} icon={Clock} variant="default" />
       </div>
 
       <Tabs defaultValue="payments" className="space-y-4">
@@ -151,18 +151,18 @@ export default function Finance() {
                 <DialogContent>
                   <DialogHeader><DialogTitle>New Payment Request</DialogTitle></DialogHeader>
                   <div className="space-y-3">
-                    <div><Label>Payee</Label><Input value={payForm.payee} onChange={(e) => setPayForm({ ...payForm, payee: e.target.value })} /></div>
+                    <div><Label>Payee</Label><Input value={String(payForm.payee)} onChange={(e) => setPayForm({ ...payForm, payee: e.target.value })} /></div>
                     <div className="grid grid-cols-2 gap-3">
-                      <div><Label>Amount</Label><Input type="number" value={payForm.amount} onChange={(e) => setPayForm({ ...payForm, amount: e.target.value })} /></div>
+                      <div><Label>Amount</Label><Input type="number" value={String(payForm.amount)} onChange={(e) => setPayForm({ ...payForm, amount: e.target.value })} /></div>
                       <div><Label>Currency</Label>
-                        <Select value={payForm.currency} onValueChange={(v) => setPayForm({ ...payForm, currency: v })}>
+                        <Select value={String(payForm.currency)} onValueChange={(v) => setPayForm({ ...payForm, currency: v })}>
                           <SelectTrigger><SelectValue /></SelectTrigger>
                           <SelectContent><SelectItem value="ETB">ETB</SelectItem><SelectItem value="USD">USD</SelectItem><SelectItem value="EUR">EUR</SelectItem></SelectContent>
                         </Select>
                       </div>
                     </div>
                     <div><Label>Urgency</Label>
-                      <Select value={payForm.urgency} onValueChange={(v) => setPayForm({ ...payForm, urgency: v })}>
+                      <Select value={String(payForm.urgency)} onValueChange={(v) => setPayForm({ ...payForm, urgency: v })}>
                         <SelectTrigger><SelectValue /></SelectTrigger>
                         <SelectContent>
                           <SelectItem value="low">Low</SelectItem><SelectItem value="normal">Normal</SelectItem>
@@ -170,7 +170,7 @@ export default function Finance() {
                         </SelectContent>
                       </Select>
                     </div>
-                    <div><Label>Reason</Label><Textarea value={payForm.reason} onChange={(e) => setPayForm({ ...payForm, reason: e.target.value })} /></div>
+                    <div><Label>Reason</Label><Textarea value={String(payForm.reason)} onChange={(e) => setPayForm({ ...payForm, reason: e.target.value })} /></div>
                   </div>
                   <DialogFooter><Button onClick={submitPayment}>Submit</Button></DialogFooter>
                 </DialogContent>
@@ -225,10 +225,10 @@ export default function Finance() {
                   <DialogContent>
                     <DialogHeader><DialogTitle>New Account</DialogTitle></DialogHeader>
                     <div className="space-y-3">
-                      <div><Label>Code</Label><Input value={acctForm.code} onChange={(e) => setAcctForm({ ...acctForm, code: e.target.value })} placeholder="1000" /></div>
-                      <div><Label>Name</Label><Input value={acctForm.name} onChange={(e) => setAcctForm({ ...acctForm, name: e.target.value })} placeholder="Cash on Hand" /></div>
+                      <div><Label>Code</Label><Input value={String(acctForm.code)} onChange={(e) => setAcctForm({ ...acctForm, code: e.target.value })} placeholder="1000" /></div>
+                      <div><Label>Name</Label><Input value={String(acctForm.name)} onChange={(e) => setAcctForm({ ...acctForm, name: e.target.value })} placeholder="Cash on Hand" /></div>
                       <div><Label>Type</Label>
-                        <Select value={acctForm.type} onValueChange={(v) => setAcctForm({ ...acctForm, type: v })}>
+                        <Select value={String(acctForm.type)} onValueChange={(v) => setAcctForm({ ...acctForm, type: v })}>
                           <SelectTrigger><SelectValue /></SelectTrigger>
                           <SelectContent>
                             <SelectItem value="asset">Asset</SelectItem><SelectItem value="liability">Liability</SelectItem>
