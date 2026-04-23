@@ -58,6 +58,204 @@ export type Database = {
           },
         ]
       }
+      asset_maintenance: {
+        Row: {
+          asset_id: string
+          cost: number
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          maintenance_date: string
+          maintenance_type: string
+          next_due_date: string | null
+          notes: string | null
+          performed_by: string | null
+          status: string
+        }
+        Insert: {
+          asset_id: string
+          cost?: number
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          maintenance_date?: string
+          maintenance_type?: string
+          next_due_date?: string | null
+          notes?: string | null
+          performed_by?: string | null
+          status?: string
+        }
+        Update: {
+          asset_id?: string
+          cost?: number
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          maintenance_date?: string
+          maintenance_type?: string
+          next_due_date?: string | null
+          notes?: string | null
+          performed_by?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "asset_maintenance_asset_id_fkey"
+            columns: ["asset_id"]
+            isOneToOne: false
+            referencedRelation: "assets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      assets: {
+        Row: {
+          accumulated_depreciation: number
+          asset_code: string
+          assigned_to: string | null
+          attributes: Json | null
+          branch_id: string | null
+          category: string
+          chassis_number: string | null
+          condition: string
+          created_at: string
+          created_by: string | null
+          current_value: number
+          depreciation_method: string
+          depreciation_rate: number
+          description: string | null
+          document_url: string | null
+          engine_number: string | null
+          id: string
+          image_url: string | null
+          insurance_expiry: string | null
+          location: string | null
+          manufacturer: string | null
+          model: string | null
+          name: string
+          name_am: string | null
+          next_maintenance_date: string | null
+          notes: string | null
+          purchase_cost: number
+          purchase_date: string | null
+          registration_number: string | null
+          salvage_value: number
+          serial_number: string | null
+          status: string
+          subcategory: string | null
+          supplier_id: string | null
+          updated_at: string
+          useful_life_years: number
+          warranty_expiry: string | null
+          year_manufactured: number | null
+        }
+        Insert: {
+          accumulated_depreciation?: number
+          asset_code: string
+          assigned_to?: string | null
+          attributes?: Json | null
+          branch_id?: string | null
+          category: string
+          chassis_number?: string | null
+          condition?: string
+          created_at?: string
+          created_by?: string | null
+          current_value?: number
+          depreciation_method?: string
+          depreciation_rate?: number
+          description?: string | null
+          document_url?: string | null
+          engine_number?: string | null
+          id?: string
+          image_url?: string | null
+          insurance_expiry?: string | null
+          location?: string | null
+          manufacturer?: string | null
+          model?: string | null
+          name: string
+          name_am?: string | null
+          next_maintenance_date?: string | null
+          notes?: string | null
+          purchase_cost?: number
+          purchase_date?: string | null
+          registration_number?: string | null
+          salvage_value?: number
+          serial_number?: string | null
+          status?: string
+          subcategory?: string | null
+          supplier_id?: string | null
+          updated_at?: string
+          useful_life_years?: number
+          warranty_expiry?: string | null
+          year_manufactured?: number | null
+        }
+        Update: {
+          accumulated_depreciation?: number
+          asset_code?: string
+          assigned_to?: string | null
+          attributes?: Json | null
+          branch_id?: string | null
+          category?: string
+          chassis_number?: string | null
+          condition?: string
+          created_at?: string
+          created_by?: string | null
+          current_value?: number
+          depreciation_method?: string
+          depreciation_rate?: number
+          description?: string | null
+          document_url?: string | null
+          engine_number?: string | null
+          id?: string
+          image_url?: string | null
+          insurance_expiry?: string | null
+          location?: string | null
+          manufacturer?: string | null
+          model?: string | null
+          name?: string
+          name_am?: string | null
+          next_maintenance_date?: string | null
+          notes?: string | null
+          purchase_cost?: number
+          purchase_date?: string | null
+          registration_number?: string | null
+          salvage_value?: number
+          serial_number?: string | null
+          status?: string
+          subcategory?: string | null
+          supplier_id?: string | null
+          updated_at?: string
+          useful_life_years?: number
+          warranty_expiry?: string | null
+          year_manufactured?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assets_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assets_branch_id_fkey"
+            columns: ["branch_id"]
+            isOneToOne: false
+            referencedRelation: "branches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assets_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       attendance: {
         Row: {
           branch_id: string | null
@@ -201,6 +399,68 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      category_field_schemas: {
+        Row: {
+          category_id: string
+          created_at: string
+          custom_fields: Json | null
+          default_reorder_point: number | null
+          default_tax_rate: number | null
+          default_unit: string | null
+          default_warranty_months: number | null
+          id: string
+          required_fields: Json | null
+          storage_conditions: string | null
+          track_batch: boolean | null
+          track_expiry: boolean | null
+          track_serial: boolean | null
+          track_warranty: boolean | null
+          updated_at: string
+        }
+        Insert: {
+          category_id: string
+          created_at?: string
+          custom_fields?: Json | null
+          default_reorder_point?: number | null
+          default_tax_rate?: number | null
+          default_unit?: string | null
+          default_warranty_months?: number | null
+          id?: string
+          required_fields?: Json | null
+          storage_conditions?: string | null
+          track_batch?: boolean | null
+          track_expiry?: boolean | null
+          track_serial?: boolean | null
+          track_warranty?: boolean | null
+          updated_at?: string
+        }
+        Update: {
+          category_id?: string
+          created_at?: string
+          custom_fields?: Json | null
+          default_reorder_point?: number | null
+          default_tax_rate?: number | null
+          default_unit?: string | null
+          default_warranty_months?: number | null
+          id?: string
+          required_fields?: Json | null
+          storage_conditions?: string | null
+          track_batch?: boolean | null
+          track_expiry?: boolean | null
+          track_serial?: boolean | null
+          track_warranty?: boolean | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "category_field_schemas_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: true
+            referencedRelation: "product_categories"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       credit_payments: {
         Row: {
@@ -637,6 +897,190 @@ export type Database = {
             columns: ["supplier_id"]
             isOneToOne: false
             referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      import_jobs: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          duplicate_rows: number
+          errors: Json | null
+          failed_rows: number
+          file_name: string | null
+          file_url: string | null
+          id: string
+          imported_rows: number
+          job_type: string
+          notes: string | null
+          performed_by: string | null
+          quarantined_rows: number
+          status: string
+          total_rows: number
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          duplicate_rows?: number
+          errors?: Json | null
+          failed_rows?: number
+          file_name?: string | null
+          file_url?: string | null
+          id?: string
+          imported_rows?: number
+          job_type: string
+          notes?: string | null
+          performed_by?: string | null
+          quarantined_rows?: number
+          status?: string
+          total_rows?: number
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          duplicate_rows?: number
+          errors?: Json | null
+          failed_rows?: number
+          file_name?: string | null
+          file_url?: string | null
+          id?: string
+          imported_rows?: number
+          job_type?: string
+          notes?: string | null
+          performed_by?: string | null
+          quarantined_rows?: number
+          status?: string
+          total_rows?: number
+        }
+        Relationships: []
+      }
+      import_rows: {
+        Row: {
+          created_at: string
+          errors: Json | null
+          id: string
+          job_id: string
+          parsed_data: Json | null
+          raw_data: Json
+          resulting_id: string | null
+          row_number: number
+          status: string
+          warnings: Json | null
+        }
+        Insert: {
+          created_at?: string
+          errors?: Json | null
+          id?: string
+          job_id: string
+          parsed_data?: Json | null
+          raw_data?: Json
+          resulting_id?: string | null
+          row_number: number
+          status?: string
+          warnings?: Json | null
+        }
+        Update: {
+          created_at?: string
+          errors?: Json | null
+          id?: string
+          job_id?: string
+          parsed_data?: Json | null
+          raw_data?: Json
+          resulting_id?: string | null
+          row_number?: number
+          status?: string
+          warnings?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "import_rows_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "import_jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      inventory_alerts: {
+        Row: {
+          alert_type: string
+          asset_id: string | null
+          batch_id: string | null
+          branch_id: string | null
+          created_at: string
+          dismissed_at: string | null
+          dismissed_by: string | null
+          id: string
+          is_dismissed: boolean
+          message: string | null
+          metadata: Json | null
+          product_id: string | null
+          recommendation: string | null
+          severity: string
+          title: string
+        }
+        Insert: {
+          alert_type: string
+          asset_id?: string | null
+          batch_id?: string | null
+          branch_id?: string | null
+          created_at?: string
+          dismissed_at?: string | null
+          dismissed_by?: string | null
+          id?: string
+          is_dismissed?: boolean
+          message?: string | null
+          metadata?: Json | null
+          product_id?: string | null
+          recommendation?: string | null
+          severity?: string
+          title: string
+        }
+        Update: {
+          alert_type?: string
+          asset_id?: string | null
+          batch_id?: string | null
+          branch_id?: string | null
+          created_at?: string
+          dismissed_at?: string | null
+          dismissed_by?: string | null
+          id?: string
+          is_dismissed?: boolean
+          message?: string | null
+          metadata?: Json | null
+          product_id?: string | null
+          recommendation?: string | null
+          severity?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_alerts_asset_id_fkey"
+            columns: ["asset_id"]
+            isOneToOne: false
+            referencedRelation: "assets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inventory_alerts_batch_id_fkey"
+            columns: ["batch_id"]
+            isOneToOne: false
+            referencedRelation: "product_batches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inventory_alerts_branch_id_fkey"
+            columns: ["branch_id"]
+            isOneToOne: false
+            referencedRelation: "branches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inventory_alerts_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
             referencedColumns: ["id"]
           },
         ]
@@ -1112,10 +1556,139 @@ export type Database = {
         }
         Relationships: []
       }
+      product_batches: {
+        Row: {
+          batch_number: string
+          branch_id: string | null
+          cost: number
+          created_at: string
+          expiry_date: string | null
+          id: string
+          manufactured_date: string | null
+          notes: string | null
+          product_id: string
+          quantity: number
+          received_date: string
+          serial_number: string | null
+          status: string
+          supplier_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          batch_number: string
+          branch_id?: string | null
+          cost?: number
+          created_at?: string
+          expiry_date?: string | null
+          id?: string
+          manufactured_date?: string | null
+          notes?: string | null
+          product_id: string
+          quantity?: number
+          received_date?: string
+          serial_number?: string | null
+          status?: string
+          supplier_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          batch_number?: string
+          branch_id?: string | null
+          cost?: number
+          created_at?: string
+          expiry_date?: string | null
+          id?: string
+          manufactured_date?: string | null
+          notes?: string | null
+          product_id?: string
+          quantity?: number
+          received_date?: string
+          serial_number?: string | null
+          status?: string
+          supplier_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_batches_branch_id_fkey"
+            columns: ["branch_id"]
+            isOneToOne: false
+            referencedRelation: "branches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_batches_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_batches_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_categories: {
+        Row: {
+          created_at: string
+          description: string | null
+          icon: string | null
+          id: string
+          is_active: boolean
+          name: string
+          name_am: string | null
+          parent_id: string | null
+          slug: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          name_am?: string | null
+          parent_id?: string | null
+          slug: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          name_am?: string | null
+          parent_id?: string | null
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_categories_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "product_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
+          attributes: Json | null
           barcode: string | null
+          branch_id: string | null
           category: string
+          category_id: string | null
           cost: number
           created_at: string
           created_by: string | null
@@ -1123,18 +1696,33 @@ export type Database = {
           expiry_date: string | null
           id: string
           image_url: string | null
+          is_active: boolean
+          max_stock: number | null
           min_stock: number
           name: string
           name_am: string | null
           price: number
+          reorder_point: number
+          sku: string | null
           stock: number
+          storage_conditions: string | null
+          subcategory: string | null
+          supplier_id: string | null
+          tax_rate: number
+          track_batch: boolean
+          track_expiry: boolean
+          track_serial: boolean
           unit: string
           updated_at: string
           variants: Json | null
+          warranty_months: number | null
         }
         Insert: {
+          attributes?: Json | null
           barcode?: string | null
+          branch_id?: string | null
           category?: string
+          category_id?: string | null
           cost?: number
           created_at?: string
           created_by?: string | null
@@ -1142,18 +1730,33 @@ export type Database = {
           expiry_date?: string | null
           id?: string
           image_url?: string | null
+          is_active?: boolean
+          max_stock?: number | null
           min_stock?: number
           name: string
           name_am?: string | null
           price?: number
+          reorder_point?: number
+          sku?: string | null
           stock?: number
+          storage_conditions?: string | null
+          subcategory?: string | null
+          supplier_id?: string | null
+          tax_rate?: number
+          track_batch?: boolean
+          track_expiry?: boolean
+          track_serial?: boolean
           unit?: string
           updated_at?: string
           variants?: Json | null
+          warranty_months?: number | null
         }
         Update: {
+          attributes?: Json | null
           barcode?: string | null
+          branch_id?: string | null
           category?: string
+          category_id?: string | null
           cost?: number
           created_at?: string
           created_by?: string | null
@@ -1161,16 +1764,50 @@ export type Database = {
           expiry_date?: string | null
           id?: string
           image_url?: string | null
+          is_active?: boolean
+          max_stock?: number | null
           min_stock?: number
           name?: string
           name_am?: string | null
           price?: number
+          reorder_point?: number
+          sku?: string | null
           stock?: number
+          storage_conditions?: string | null
+          subcategory?: string | null
+          supplier_id?: string | null
+          tax_rate?: number
+          track_batch?: boolean
+          track_expiry?: boolean
+          track_serial?: boolean
           unit?: string
           updated_at?: string
           variants?: Json | null
+          warranty_months?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "products_branch_id_fkey"
+            columns: ["branch_id"]
+            isOneToOne: false
+            referencedRelation: "branches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "products_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "product_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "products_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -1425,6 +2062,209 @@ export type Database = {
             columns: ["customer_id"]
             isOneToOne: false
             referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      stock_movements: {
+        Row: {
+          batch_id: string | null
+          branch_id: string | null
+          created_at: string
+          id: string
+          movement_type: string
+          notes: string | null
+          performed_by: string | null
+          product_id: string
+          quantity_after: number
+          quantity_before: number
+          quantity_change: number
+          reason: string | null
+          reference_id: string | null
+          reference_type: string | null
+        }
+        Insert: {
+          batch_id?: string | null
+          branch_id?: string | null
+          created_at?: string
+          id?: string
+          movement_type: string
+          notes?: string | null
+          performed_by?: string | null
+          product_id: string
+          quantity_after?: number
+          quantity_before?: number
+          quantity_change: number
+          reason?: string | null
+          reference_id?: string | null
+          reference_type?: string | null
+        }
+        Update: {
+          batch_id?: string | null
+          branch_id?: string | null
+          created_at?: string
+          id?: string
+          movement_type?: string
+          notes?: string | null
+          performed_by?: string | null
+          product_id?: string
+          quantity_after?: number
+          quantity_before?: number
+          quantity_change?: number
+          reason?: string | null
+          reference_id?: string | null
+          reference_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stock_movements_batch_id_fkey"
+            columns: ["batch_id"]
+            isOneToOne: false
+            referencedRelation: "product_batches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_movements_branch_id_fkey"
+            columns: ["branch_id"]
+            isOneToOne: false
+            referencedRelation: "branches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_movements_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      stock_transfer_items: {
+        Row: {
+          batch_id: string | null
+          id: string
+          notes: string | null
+          product_id: string
+          quantity: number
+          received_quantity: number
+          transfer_id: string
+          unit_cost: number
+        }
+        Insert: {
+          batch_id?: string | null
+          id?: string
+          notes?: string | null
+          product_id: string
+          quantity?: number
+          received_quantity?: number
+          transfer_id: string
+          unit_cost?: number
+        }
+        Update: {
+          batch_id?: string | null
+          id?: string
+          notes?: string | null
+          product_id?: string
+          quantity?: number
+          received_quantity?: number
+          transfer_id?: string
+          unit_cost?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stock_transfer_items_batch_id_fkey"
+            columns: ["batch_id"]
+            isOneToOne: false
+            referencedRelation: "product_batches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_transfer_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_transfer_items_transfer_id_fkey"
+            columns: ["transfer_id"]
+            isOneToOne: false
+            referencedRelation: "stock_transfers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      stock_transfers: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          destination_branch_id: string
+          id: string
+          notes: string | null
+          reason: string | null
+          received_at: string | null
+          rejected_reason: string | null
+          requested_by: string | null
+          shipped_at: string | null
+          source_branch_id: string
+          status: string
+          total_items: number
+          total_quantity: number
+          transfer_code: string
+          updated_at: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          destination_branch_id: string
+          id?: string
+          notes?: string | null
+          reason?: string | null
+          received_at?: string | null
+          rejected_reason?: string | null
+          requested_by?: string | null
+          shipped_at?: string | null
+          source_branch_id: string
+          status?: string
+          total_items?: number
+          total_quantity?: number
+          transfer_code: string
+          updated_at?: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          destination_branch_id?: string
+          id?: string
+          notes?: string | null
+          reason?: string | null
+          received_at?: string | null
+          rejected_reason?: string | null
+          requested_by?: string | null
+          shipped_at?: string | null
+          source_branch_id?: string
+          status?: string
+          total_items?: number
+          total_quantity?: number
+          transfer_code?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stock_transfers_destination_branch_id_fkey"
+            columns: ["destination_branch_id"]
+            isOneToOne: false
+            referencedRelation: "branches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_transfers_source_branch_id_fkey"
+            columns: ["source_branch_id"]
+            isOneToOne: false
+            referencedRelation: "branches"
             referencedColumns: ["id"]
           },
         ]
