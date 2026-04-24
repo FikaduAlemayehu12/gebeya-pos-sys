@@ -181,6 +181,12 @@ export default function AdminPanel() {
           ))}
         </div>
       )}
+        </TabsContent>
+
+        <TabsContent value="companies">
+          <CompaniesTab />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
