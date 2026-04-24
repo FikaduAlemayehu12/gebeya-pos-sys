@@ -2943,6 +2943,7 @@ export type Database = {
         }
         Returns: string
       }
+      set_active_tenant: { Args: { _company_id: string }; Returns: boolean }
     }
     Enums: {
       app_role:
