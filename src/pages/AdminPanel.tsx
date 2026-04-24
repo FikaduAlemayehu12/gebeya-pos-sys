@@ -7,9 +7,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
-import { Plus, Loader2, Users, Shield } from 'lucide-react';
+import { Plus, Loader2, Users, Shield, Building2 } from 'lucide-react';
+import CompaniesTab from '@/components/admin/CompaniesTab';
 
 interface UserWithRole {
   user_id: string;
@@ -81,11 +83,23 @@ export default function AdminPanel() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">User Management</h1>
-          <p className="text-sm text-muted-foreground font-ethiopic">የተጠቃሚ አስተዳደር</p>
-        </div>
+      <div>
+        <h1 className="text-2xl font-bold text-foreground">Administration</h1>
+        <p className="text-sm text-muted-foreground font-ethiopic">አስተዳደር</p>
+      </div>
+
+      <Tabs defaultValue="users" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="users" className="gap-1.5"><Users className="w-3.5 h-3.5" />Users</TabsTrigger>
+          <TabsTrigger value="companies" className="gap-1.5"><Building2 className="w-3.5 h-3.5" />Companies</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="users" className="space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h2 className="text-lg font-semibold text-foreground">User Management</h2>
+              <p className="text-xs text-muted-foreground font-ethiopic">የተጠቃሚ አስተዳደር</p>
+            </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button size="sm" className="gap-1.5 text-xs gradient-primary text-primary-foreground">
