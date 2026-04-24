@@ -200,13 +200,8 @@ export default function POS() {
         total: i.product.price * i.quantity,
       }));
       await supabase.from('sale_items').insert(saleItems);
-
-      for (const item of cart) {
-        await supabase
-          .from('products')
-          .update({ stock: item.product.stock - item.quantity })
-          .eq('id', item.product.id);
-      }
+      // Stock deduction + finance journal posting handled automatically by DB triggers
+      // (trg_sale_item_insert deducts stock, trg_sale_insert posts journal entry)
 
       if (isCredit && creditCustomer && creditDueDate) {
         await supabase.from('credit_sales').insert({

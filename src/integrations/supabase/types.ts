@@ -2442,6 +2442,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      account_id_by_code: { Args: { _code: string }; Returns: string }
       get_employee_id_for_user: { Args: { _user_id: string }; Returns: string }
       has_role: {
         Args: {
@@ -2457,6 +2458,15 @@ export type Database = {
       is_finance_staff: { Args: { _user_id: string }; Returns: boolean }
       is_hr_staff: { Args: { _user_id: string }; Returns: boolean }
       is_procurement_staff: { Args: { _user_id: string }; Returns: boolean }
+      post_journal_entry: {
+        Args: {
+          _description: string
+          _entry_code: string
+          _lines: Json
+          _reference: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       app_role:
