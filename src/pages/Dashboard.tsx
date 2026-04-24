@@ -10,6 +10,7 @@ import StatCard from '@/components/StatCard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import IntegrationActivityFeed from '@/components/IntegrationActivityFeed';
 import { cn } from '@/lib/utils';
 
 const METHOD_BADGE: Record<string, { label: string; className: string }> = {
@@ -241,6 +242,9 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Cross-module Integration Feed */}
+      <IntegrationActivityFeed />
 
       {/* Payment Methods Breakdown */}
       <Card className="bg-card">
