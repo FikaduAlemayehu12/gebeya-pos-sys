@@ -10,6 +10,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import NotificationPanel from '@/components/NotificationPanel';
 import ExchangeRateDisplay from '@/components/ExchangeRateDisplay';
 import CurrencySwitcher from '@/components/CurrencySwitcher';
+import CompanySwitcher from '@/components/CompanySwitcher';
 import { supabase } from '@/integrations/supabase/client';
 
 type AppRole =
@@ -151,6 +152,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
               )}
             </button>
             <NotificationPanel open={notifOpen} onClose={() => setNotifOpen(false)} />
+            <CompanySwitcher />
             <div className="hidden sm:block">
               <CurrencySwitcher />
             </div>
