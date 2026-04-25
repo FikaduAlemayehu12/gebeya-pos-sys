@@ -172,7 +172,16 @@ export default function ProductFormDialog({ onSuccess, editProduct, trigger }: P
     setAttributes({}); setVariants([]);
     setVariantName(''); setVariantPrice(''); setVariantStock('');
     setDuplicateFound(null);
+    setSubcategoryMode('preset');
   };
+
+  // Reset subcategory selection when category changes (only when not editing)
+  useEffect(() => {
+    if (editProduct) return;
+    setSubcategory('');
+    setSubcategoryMode('preset');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [categoryId]);
 
   // Duplicate detection
   useEffect(() => {
