@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { formatETB } from '@/lib/ethiopian';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
-  Search, Package, AlertTriangle, Loader2, ImageIcon, Boxes, Truck, Building2, Bell, Sparkles,
+  Search, Package, AlertTriangle, Loader2, ImageIcon, Boxes, Truck, Building2, Bell, Sparkles, ChevronRight,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import ProductFormDialog from '@/components/ProductFormDialog';
@@ -17,6 +17,9 @@ import TransfersList from '@/components/inventory/TransfersList';
 import AssetsList from '@/components/inventory/AssetsList';
 import AlertsPanel from '@/components/inventory/AlertsPanel';
 import ImportExportPanel from '@/components/inventory/ImportExportPanel';
+import StockTransferDialog from '@/components/inventory/StockTransferDialog';
+import AssetFormDialog from '@/components/inventory/AssetFormDialog';
+import InventoryStatDetail, { StatKind } from '@/components/inventory/InventoryStatDetail';
 
 interface Product {
   id: string;
@@ -52,6 +55,9 @@ export default function Inventory() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [activeTab, setActiveTab] = useState('products');
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [detailKind, setDetailKind] = useState<StatKind>('all');
   const { formatMoney, currency } = useCurrency();
 
   const fetchProducts = useCallback(async () => {
@@ -84,8 +90,21 @@ export default function Inventory() {
   ).length;
   const totalValue = products.reduce((s, i) => s + i.price * i.stock, 0);
 
+  // Critical alerts count for badge
+  const criticalAlerts = useMemo(() => {
+    const now = Date.now();
+    return products.filter(p =>
+      p.stock <= 0 ||
+      p.stock <= p.min_stock ||
+      (p.expiry_date && new Date(p.expiry_date).getTime() <= now + 7 * 86400000)
+    ).length;
+  }, [products]);
+
+  const openDetail = (k: StatKind) => { setDetailKind(k); setDetailOpen(true); };
+
   return (
     <div className="space-y-6">
+      {/* Header with all actions */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
@@ -95,62 +114,105 @@ export default function Inventory() {
         </div>
         <div className="flex flex-wrap gap-2">
           <ImportExportPanel onSuccess={fetchProducts} />
+          <StockTransferDialog onSuccess={fetchProducts} />
+          <AssetFormDialog onSuccess={fetchProducts} />
           <ProductFormDialog onSuccess={fetchProducts} />
         </div>
       </div>
 
+      {/* Critical alert banner */}
+      {criticalAlerts > 0 && (
+        <button
+          onClick={() => setActiveTab('alerts')}
+          className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-lg border-l-4 border-destructive bg-destructive/5 hover:bg-destructive/10 transition-colors text-left group"
+        >
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-destructive/10">
+              <AlertTriangle className="w-4 h-4 text-destructive" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-foreground">
+                {criticalAlerts} {criticalAlerts === 1 ? 'item needs' : 'items need'} immediate attention
+              </p>
+              <p className="text-xs text-muted-foreground">Out-of-stock, low stock, or expiring within 7 days</p>
+            </div>
+          </div>
+          <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:translate-x-0.5 transition-transform" />
+        </button>
+      )}
+
+      {/* Clickable summary metrics */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <Card className="bg-card stat-card-shadow">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Total Products</p>
-                <p className="text-2xl font-bold text-foreground mt-1">{totalItems}</p>
+        <button onClick={() => openDetail('all')} className="text-left">
+          <Card className="bg-card stat-card-shadow hover:shadow-md transition-shadow cursor-pointer">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Total Products</p>
+                  <p className="text-2xl font-bold text-foreground mt-1">{totalItems}</p>
+                  <p className="text-[10px] text-primary mt-0.5 flex items-center gap-0.5">View all <ChevronRight className="w-2.5 h-2.5" /></p>
+                </div>
+                <div className="p-2 rounded-lg bg-primary/10"><Package className="w-5 h-5 text-primary" /></div>
               </div>
-              <div className="p-2 rounded-lg bg-primary/10"><Package className="w-5 h-5 text-primary" /></div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="bg-card stat-card-shadow">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Low Stock</p>
-                <p className="text-2xl font-bold text-destructive mt-1">{lowStockCount}</p>
+            </CardContent>
+          </Card>
+        </button>
+        <button onClick={() => openDetail('low')} className="text-left">
+          <Card className="bg-card stat-card-shadow hover:shadow-md transition-shadow cursor-pointer">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Low Stock</p>
+                  <p className="text-2xl font-bold text-destructive mt-1">{lowStockCount}</p>
+                  <p className="text-[10px] text-destructive mt-0.5 flex items-center gap-0.5">View items <ChevronRight className="w-2.5 h-2.5" /></p>
+                </div>
+                <div className="p-2 rounded-lg bg-destructive/10"><AlertTriangle className="w-5 h-5 text-destructive" /></div>
               </div>
-              <div className="p-2 rounded-lg bg-destructive/10"><AlertTriangle className="w-5 h-5 text-destructive" /></div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="bg-card stat-card-shadow">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Expiring (30d)</p>
-                <p className="text-2xl font-bold text-warning mt-1">{expiringCount}</p>
+            </CardContent>
+          </Card>
+        </button>
+        <button onClick={() => openDetail('expiring')} className="text-left">
+          <Card className="bg-card stat-card-shadow hover:shadow-md transition-shadow cursor-pointer">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Expiring (30d)</p>
+                  <p className="text-2xl font-bold text-warning mt-1">{expiringCount}</p>
+                  <p className="text-[10px] text-warning mt-0.5 flex items-center gap-0.5">View items <ChevronRight className="w-2.5 h-2.5" /></p>
+                </div>
+                <div className="p-2 rounded-lg bg-warning/10"><Bell className="w-5 h-5 text-warning" /></div>
               </div>
-              <div className="p-2 rounded-lg bg-warning/10"><Bell className="w-5 h-5 text-warning" /></div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="bg-card stat-card-shadow">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Total Value</p>
-                <p className="text-2xl font-bold text-foreground mt-1">{formatMoney(totalValue)}</p>
-                {currency !== 'ETB' && <p className="text-[10px] text-muted-foreground mt-0.5">{formatETB(totalValue)}</p>}
+            </CardContent>
+          </Card>
+        </button>
+        <button onClick={() => openDetail('value')} className="text-left">
+          <Card className="bg-card stat-card-shadow hover:shadow-md transition-shadow cursor-pointer">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Total Value</p>
+                  <p className="text-2xl font-bold text-foreground mt-1">{formatMoney(totalValue)}</p>
+                  {currency !== 'ETB' && <p className="text-[10px] text-muted-foreground mt-0.5">{formatETB(totalValue)}</p>}
+                  <p className="text-[10px] text-primary mt-0.5 flex items-center gap-0.5">Breakdown <ChevronRight className="w-2.5 h-2.5" /></p>
+                </div>
+                <div className="p-2 rounded-lg bg-secondary/10"><Sparkles className="w-5 h-5 text-secondary-foreground" /></div>
               </div>
-              <div className="p-2 rounded-lg bg-secondary/10"><Sparkles className="w-5 h-5 text-secondary-foreground" /></div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </button>
       </div>
 
-      <Tabs defaultValue="products" className="w-full">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid grid-cols-4 w-full max-w-2xl">
           <TabsTrigger value="products" className="gap-1.5 text-xs"><Package className="w-3.5 h-3.5" /> Products</TabsTrigger>
-          <TabsTrigger value="alerts" className="gap-1.5 text-xs"><Bell className="w-3.5 h-3.5" /> Alerts</TabsTrigger>
+          <TabsTrigger value="alerts" className="gap-1.5 text-xs relative">
+            <Bell className="w-3.5 h-3.5" /> Intelligence
+            {criticalAlerts > 0 && (
+              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center">
+                {criticalAlerts}
+              </span>
+            )}
+          </TabsTrigger>
           <TabsTrigger value="transfers" className="gap-1.5 text-xs"><Truck className="w-3.5 h-3.5" /> Transfers</TabsTrigger>
           <TabsTrigger value="assets" className="gap-1.5 text-xs"><Building2 className="w-3.5 h-3.5" /> Assets</TabsTrigger>
         </TabsList>
@@ -272,6 +334,13 @@ export default function Inventory() {
           <AssetsList />
         </TabsContent>
       </Tabs>
+
+      <InventoryStatDetail
+        open={detailOpen}
+        onOpenChange={setDetailOpen}
+        kind={detailKind}
+        products={products}
+      />
     </div>
   );
 }
