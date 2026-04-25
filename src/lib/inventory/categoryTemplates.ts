@@ -32,6 +32,8 @@ export interface CategoryTemplate {
   customFields?: CustomField[];
   /** Suggested keywords on the standard product fields */
   hints?: string[];
+  /** Product-name suggestions, keyed by subcategory (or "_default" when no sub picked) */
+  productNameSuggestions?: Record<string, string[]>;
 }
 
 export const CATEGORY_TEMPLATES: Record<string, CategoryTemplate> = {
@@ -40,6 +42,17 @@ export const CATEGORY_TEMPLATES: Record<string, CategoryTemplate> = {
     defaultTaxRate: 0,
     defaultReorderPoint: 10,
     subcategories: ['Teff', 'Wheat', 'Barley', 'Maize', 'Coffee Beans', 'Sesame', 'Spices', 'Vegetables', 'Fruits'],
+    productNameSuggestions: {
+      'Teff': ['White Teff (Magna)', 'Red Teff (Quey)', 'Mixed Teff (Sergegna)', 'Bunign Teff'],
+      'Wheat': ['Soft Wheat', 'Hard Wheat (Durum)', 'Bread Wheat', 'Whole Wheat'],
+      'Barley': ['Food Barley', 'Malt Barley', 'Hulless Barley'],
+      'Maize': ['Yellow Maize', 'White Maize', 'Hybrid Maize'],
+      'Coffee Beans': ['Yirgacheffe', 'Sidamo', 'Harrar', 'Limu', 'Jimma', 'Guji', 'Washed Arabica', 'Natural Arabica'],
+      'Sesame': ['White Sesame (Humera)', 'Mixed Sesame (Wollega)'],
+      'Spices': ['Berbere', 'Mitmita', 'Korerima', 'Black Cumin (Tikur Azmud)', 'Turmeric', 'Ginger', 'Garlic Powder'],
+      'Vegetables': ['Tomato', 'Onion', 'Potato', 'Carrot', 'Cabbage', 'Pepper', 'Lettuce', 'Spinach'],
+      'Fruits': ['Banana', 'Mango', 'Avocado', 'Orange', 'Papaya', 'Pineapple', 'Apple', 'Lemon'],
+    },
     customFields: [
       { key: 'origin_region', label: 'Origin Region', type: 'text', placeholder: 'e.g. Oromia, Sidama' },
       { key: 'harvest_date', label: 'Harvest Date', type: 'date' },
@@ -54,6 +67,16 @@ export const CATEGORY_TEMPLATES: Record<string, CategoryTemplate> = {
     defaultReorderPoint: 20,
     storageConditions: 'Cool, dry place below 25°C',
     subcategories: ['Tablets', 'Capsules', 'Syrup', 'Injection', 'Cream', 'Drops', 'Antibiotics', 'Vitamins'],
+    productNameSuggestions: {
+      'Tablets': ['Paracetamol 500mg', 'Ibuprofen 400mg', 'Aspirin 100mg', 'Metformin 500mg', 'Amlodipine 5mg'],
+      'Capsules': ['Amoxicillin 500mg', 'Omeprazole 20mg', 'Doxycycline 100mg', 'Fluconazole 150mg'],
+      'Syrup': ['Cough Syrup', 'Paracetamol Syrup', 'Iron Syrup', 'Vitamin C Syrup'],
+      'Injection': ['Ceftriaxone 1g', 'Insulin', 'Diclofenac Injection', 'Vitamin B12 Injection'],
+      'Cream': ['Hydrocortisone Cream', 'Antifungal Cream', 'Antibiotic Cream'],
+      'Drops': ['Eye Drops', 'Ear Drops', 'Nasal Drops'],
+      'Antibiotics': ['Amoxicillin 500mg', 'Azithromycin 500mg', 'Ciprofloxacin 500mg', 'Metronidazole 400mg'],
+      'Vitamins': ['Vitamin C 1000mg', 'Vitamin D3', 'Multivitamin', 'Iron + Folic Acid', 'Zinc Tablets'],
+    },
     customFields: [
       { key: 'batch_number', label: 'Batch Number', type: 'text', required: true },
       { key: 'dosage', label: 'Dosage', type: 'text', placeholder: 'e.g. 500mg' },
@@ -105,6 +128,16 @@ export const CATEGORY_TEMPLATES: Record<string, CategoryTemplate> = {
     defaultWarrantyMonths: 12,
     defaultReorderPoint: 5,
     subcategories: ['Phones', 'TVs', 'Audio', 'Cameras', 'Cables', 'Chargers', 'Speakers', 'Accessories'],
+    productNameSuggestions: {
+      'Phones': ['Samsung Galaxy A14', 'Tecno Spark 10', 'iPhone 13', 'Infinix Hot 30', 'Xiaomi Redmi Note 12'],
+      'TVs': ['Samsung 43" Smart TV', 'LG 32" LED TV', 'Sony Bravia 50"', 'Hisense 55" 4K'],
+      'Audio': ['JBL Speaker', 'Bluetooth Headphones', 'Sound Bar', 'Earbuds'],
+      'Cameras': ['Canon EOS', 'Nikon DSLR', 'Sony Mirrorless', 'GoPro Hero'],
+      'Cables': ['HDMI Cable', 'USB-C Cable', 'Lightning Cable', 'Aux Cable'],
+      'Chargers': ['Fast Charger 25W', 'Wireless Charger', 'Power Bank 10000mAh', 'Car Charger'],
+      'Speakers': ['Bluetooth Speaker', 'Home Theater', 'Portable Speaker'],
+      'Accessories': ['Phone Case', 'Screen Protector', 'Memory Card', 'Tripod'],
+    },
     customFields: [
       { key: 'serial_number', label: 'Serial Number / IMEI', type: 'text' },
       { key: 'manufacturer', label: 'Brand', type: 'text' },
@@ -131,6 +164,14 @@ export const CATEGORY_TEMPLATES: Record<string, CategoryTemplate> = {
     defaultWarrantyMonths: 36,
     defaultReorderPoint: 1,
     subcategories: ['Cars', 'Trucks', 'Motorcycles', 'Buses', 'Pickups', 'Spare Parts'],
+    productNameSuggestions: {
+      'Cars': ['Toyota Corolla', 'Toyota Vitz', 'Hyundai Accent', 'Kia Picanto', 'Suzuki Dzire'],
+      'Trucks': ['Isuzu FSR', 'Sino Truck Howo', 'FAW Tipper', 'Mitsubishi Canter'],
+      'Motorcycles': ['Bajaj Boxer', 'TVS Star', 'Yamaha Crux', 'Honda CB125'],
+      'Buses': ['Toyota Coaster', 'Higer Bus', 'Yutong Bus', 'King Long'],
+      'Pickups': ['Toyota Hilux', 'Isuzu D-Max', 'Mitsubishi L200', 'Ford Ranger'],
+      'Spare Parts': ['Brake Pad', 'Engine Oil', 'Air Filter', 'Tire', 'Battery', 'Spark Plug'],
+    },
     customFields: [
       { key: 'chassis_number', label: 'Chassis Number (VIN)', type: 'text', required: true },
       { key: 'engine_number', label: 'Engine Number', type: 'text', required: true },
@@ -144,6 +185,14 @@ export const CATEGORY_TEMPLATES: Record<string, CategoryTemplate> = {
     defaultUnit: 'Piece',
     defaultReorderPoint: 3,
     subcategories: ['Sofas', 'Beds', 'Tables', 'Chairs', 'Wardrobes', 'Office Furniture'],
+    productNameSuggestions: {
+      'Sofas': ['3-Seater Sofa', 'L-Shape Sectional', 'Recliner Sofa', 'Loveseat'],
+      'Beds': ['King Size Bed', 'Queen Size Bed', 'Single Bed', 'Bunk Bed'],
+      'Tables': ['Dining Table', 'Coffee Table', 'Office Desk', 'Side Table'],
+      'Chairs': ['Office Chair', 'Dining Chair', 'Plastic Chair', 'Bar Stool'],
+      'Wardrobes': ['3-Door Wardrobe', '4-Door Wardrobe', 'Sliding Wardrobe'],
+      'Office Furniture': ['Executive Desk', 'Filing Cabinet', 'Conference Table', 'Reception Counter'],
+    },
     customFields: [
       { key: 'material', label: 'Material', type: 'text', placeholder: 'Wood, Metal, Fabric' },
       { key: 'dimensions', label: 'Dimensions (LxWxH)', type: 'text' },
@@ -158,6 +207,15 @@ export const CATEGORY_TEMPLATES: Record<string, CategoryTemplate> = {
     defaultReorderPoint: 20,
     storageConditions: 'Cold storage 2-8°C',
     subcategories: ['Fresh Milk', 'Yogurt', 'Cheese', 'Butter', 'Ayib', 'Ergo', 'Cream'],
+    productNameSuggestions: {
+      'Fresh Milk': ['Whole Milk 1L', 'Skim Milk 1L', 'Family Milk 2L', 'Lame Milk 500ml'],
+      'Yogurt': ['Plain Yogurt', 'Strawberry Yogurt', 'Vanilla Yogurt', 'Greek Yogurt'],
+      'Cheese': ['Mozzarella', 'Cheddar', 'Cream Cheese', 'Cottage Cheese'],
+      'Butter': ['Salted Butter', 'Unsalted Butter', 'Niter Kibbeh (Spiced)'],
+      'Ayib': ['Fresh Ayib', 'Aged Ayib'],
+      'Ergo': ['Plain Ergo', 'Sweet Ergo'],
+      'Cream': ['Whipping Cream', 'Sour Cream', 'Heavy Cream'],
+    },
     customFields: [
       { key: 'fat_content', label: 'Fat Content %', type: 'number' },
       { key: 'pasteurized', label: 'Pasteurized', type: 'boolean' },
@@ -178,6 +236,14 @@ export const CATEGORY_TEMPLATES: Record<string, CategoryTemplate> = {
     defaultTaxRate: 50,
     defaultReorderPoint: 12,
     subcategories: ['Beer', 'Wine', 'Whiskey', 'Vodka', 'Gin', 'Local Tej/Tella'],
+    productNameSuggestions: {
+      'Beer': ['St. George Lager', 'Habesha Beer', 'Bedele Special', 'Walia Beer', 'Heineken'],
+      'Wine': ['Awash Red Wine', 'Axumite White Wine', 'Castel Rouge', 'Rift Valley Rosé'],
+      'Whiskey': ['Johnnie Walker Black', 'Jack Daniels', 'Chivas Regal', 'Famous Grouse'],
+      'Vodka': ['Smirnoff', 'Absolut', 'Russian Standard'],
+      'Gin': ["Gordon's Gin", 'Bombay Sapphire', 'Beefeater'],
+      'Local Tej/Tella': ['Tej (Honey Wine)', 'Tella (Local Beer)', 'Korefe'],
+    },
     customFields: [
       { key: 'alcohol_percent', label: 'Alcohol %', type: 'number', required: true },
       { key: 'volume_ml', label: 'Volume (ml)', type: 'number' },
@@ -207,6 +273,15 @@ export const CATEGORY_TEMPLATES: Record<string, CategoryTemplate> = {
     defaultUnit: 'Piece',
     defaultTaxRate: 15,
     subcategories: ['Doro Wat', 'Tibs', 'Kitfo', 'Shiro', 'Injera', 'Dulet', 'Beyaynetu'],
+    productNameSuggestions: {
+      'Doro Wat': ['Doro Wat (Full)', 'Doro Wat (Half)', 'Doro Wat with Egg'],
+      'Tibs': ['Beef Tibs', 'Lamb Tibs', 'Awaze Tibs', 'Shekla Tibs', 'Zilzil Tibs'],
+      'Kitfo': ['Kitfo Leb-Leb', 'Kitfo Tere', 'Kitfo Special'],
+      'Shiro': ['Shiro Wat', 'Bozena Shiro', 'Shiro Tegabino'],
+      'Injera': ['Teff Injera', 'Mixed Injera', 'Wheat Injera'],
+      'Dulet': ['Beef Dulet', 'Lamb Dulet'],
+      'Beyaynetu': ['Beyaynetu (Fasting)', 'Beyaynetu Special'],
+    },
     customFields: [
       { key: 'spice_level', label: 'Spice Level', type: 'select', options: ['Mild', 'Medium', 'Hot', 'Extra Hot'] },
       { key: 'fasting_friendly', label: 'Fasting (Tsom)', type: 'boolean' },
@@ -242,6 +317,14 @@ export const CATEGORY_TEMPLATES: Record<string, CategoryTemplate> = {
     trackExpiry: true,
     defaultReorderPoint: 20,
     subcategories: ['Bread', 'Cakes', 'Pastries', 'Cookies', 'Donuts', 'Muffins'],
+    productNameSuggestions: {
+      'Bread': ['White Bread Loaf', 'Whole Wheat Bread', 'Hambasha', 'Dabo Kolo', 'French Baguette'],
+      'Cakes': ['Birthday Cake', 'Chocolate Cake', 'Vanilla Cake', 'Carrot Cake', 'Wedding Cake'],
+      'Pastries': ['Croissant', 'Danish Pastry', 'Cinnamon Roll', 'Sambusa'],
+      'Cookies': ['Chocolate Chip Cookies', 'Butter Cookies', 'Oatmeal Cookies'],
+      'Donuts': ['Glazed Donut', 'Chocolate Donut', 'Jelly Donut'],
+      'Muffins': ['Blueberry Muffin', 'Chocolate Muffin', 'Banana Muffin'],
+    },
     customFields: [
       { key: 'baked_date', label: 'Baked Date', type: 'date' },
       { key: 'shelf_life_days', label: 'Shelf Life (days)', type: 'number' },
@@ -259,6 +342,13 @@ export const CATEGORY_TEMPLATES: Record<string, CategoryTemplate> = {
     trackExpiry: true,
     trackBatch: true,
     subcategories: ['Skincare', 'Makeup', 'Hair Care', 'Fragrance', 'Nail Care'],
+    productNameSuggestions: {
+      'Skincare': ['Face Moisturizer', 'Sunscreen SPF 50', 'Face Wash', 'Body Lotion', 'Anti-aging Cream'],
+      'Makeup': ['Foundation', 'Lipstick', 'Mascara', 'Eyeshadow Palette', 'Blush'],
+      'Hair Care': ['Shampoo', 'Conditioner', 'Hair Oil', 'Hair Mask'],
+      'Fragrance': ['Perfume EDT', 'Body Spray', 'Cologne', 'Deodorant'],
+      'Nail Care': ['Nail Polish', 'Nail Remover', 'Nail File'],
+    },
     customFields: [
       { key: 'volume_ml', label: 'Volume (ml)', type: 'number' },
       { key: 'skin_type', label: 'Skin Type', type: 'select', options: ['All', 'Dry', 'Oily', 'Sensitive', 'Combination'] },
@@ -268,6 +358,13 @@ export const CATEGORY_TEMPLATES: Record<string, CategoryTemplate> = {
     defaultUnit: 'Piece',
     defaultTaxRate: 15,
     subcategories: ['Men', 'Women', 'Kids', 'Traditional', 'Sportswear'],
+    productNameSuggestions: {
+      'Men': ["Men's T-Shirt", "Men's Jeans", "Men's Suit", "Men's Polo Shirt", "Men's Jacket"],
+      'Women': ["Women's Dress", "Women's Blouse", "Women's Skirt", "Women's Jeans", "Women's Cardigan"],
+      'Kids': ["Kids T-Shirt", "Kids Pants", "Baby Onesie", "Kids School Uniform"],
+      'Traditional': ['Habesha Kemis', 'Netela', 'Gabi', 'Kuta', 'Habesha Suit', 'Shamma'],
+      'Sportswear': ['Tracksuit', 'Sports Jersey', 'Yoga Pants', 'Running Shorts'],
+    },
     customFields: [
       { key: 'size', label: 'Size', type: 'select', options: ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'] },
       { key: 'color', label: 'Color', type: 'text' },
@@ -289,6 +386,15 @@ export const CATEGORY_TEMPLATES: Record<string, CategoryTemplate> = {
     defaultTaxRate: 15,
     defaultReorderPoint: 5,
     subcategories: ['Cement', 'Iron Bars', 'Bricks', 'Sand', 'Tiles', 'Paint', 'Wood'],
+    productNameSuggestions: {
+      'Cement': ['Dangote Cement 50kg', 'Mugher Cement 50kg', 'Derba Cement 50kg', 'National Cement 50kg'],
+      'Iron Bars': ['Rebar 8mm', 'Rebar 10mm', 'Rebar 12mm', 'Rebar 16mm', 'Rebar 20mm'],
+      'Bricks': ['HCB 15cm', 'HCB 20cm', 'Solid Brick', 'Red Clay Brick'],
+      'Sand': ['Fine Sand', 'Coarse Sand', 'River Sand', 'Crushed Sand'],
+      'Tiles': ['Floor Tile 60x60', 'Wall Tile 30x60', 'Porcelain Tile', 'Ceramic Tile'],
+      'Paint': ['Interior Emulsion', 'Exterior Paint', 'Wood Paint', 'Metal Primer', 'Roof Paint'],
+      'Wood': ['Plywood Sheet', 'MDF Board', 'Eucalyptus Pole', 'Pine Plank'],
+    },
     customFields: [
       { key: 'grade', label: 'Grade/Class', type: 'text' },
       { key: 'dimensions', label: 'Dimensions', type: 'text' },

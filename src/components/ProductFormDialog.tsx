@@ -89,6 +89,10 @@ export default function ProductFormDialog({ onSuccess, editProduct, trigger }: P
     return mergeTemplate(base, schemas[selectedCategory.id]);
   }, [selectedCategory, schemas]);
 
+  // "Other" (custom) subcategory state
+  const [subcategoryMode, setSubcategoryMode] = useState<'preset' | 'other'>('preset');
+  const OTHER_SENTINEL = '__other__';
+
   // Load metadata once dialog opens
   useEffect(() => {
     if (!open) return;
@@ -168,7 +172,16 @@ export default function ProductFormDialog({ onSuccess, editProduct, trigger }: P
     setAttributes({}); setVariants([]);
     setVariantName(''); setVariantPrice(''); setVariantStock('');
     setDuplicateFound(null);
+    setSubcategoryMode('preset');
   };
+
+  // Reset subcategory selection when category changes (only when not editing)
+  useEffect(() => {
+    if (editProduct) return;
+    setSubcategory('');
+    setSubcategoryMode('preset');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [categoryId]);
 
   // Duplicate detection
   useEffect(() => {
@@ -417,27 +430,83 @@ export default function ProductFormDialog({ onSuccess, editProduct, trigger }: P
             <div className="space-y-1.5">
               <Label className="text-xs">Subcategory</Label>
               {subcatOptions.length > 0 ? (
-                <Select value={subcategory} onValueChange={setSubcategory}>
-                  <SelectTrigger><SelectValue placeholder="Select..." /></SelectTrigger>
-                  <SelectContent>{subcatOptions.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
-                </Select>
+                <div className="space-y-1.5">
+                  <Select
+                    value={subcategoryMode === 'other' ? OTHER_SENTINEL : subcategory}
+                    onValueChange={(v) => {
+                      if (v === OTHER_SENTINEL) {
+                        setSubcategoryMode('other');
+                        setSubcategory('');
+                      } else {
+                        setSubcategoryMode('preset');
+                        setSubcategory(v);
+                      }
+                    }}
+                  >
+                    <SelectTrigger><SelectValue placeholder="Select..." /></SelectTrigger>
+                    <SelectContent>
+                      {subcatOptions.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                      <SelectItem value={OTHER_SENTINEL}>Other (specify)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {subcategoryMode === 'other' && (
+                    <Input
+                      value={subcategory}
+                      onChange={e => setSubcategory(e.target.value)}
+                      placeholder="Type custom subcategory..."
+                      autoFocus
+                    />
+                  )}
+                </div>
               ) : (
                 <Input value={subcategory} onChange={e => setSubcategory(e.target.value)} placeholder={categoryId ? 'Optional' : 'Pick a category first'} disabled={!categoryId} />
               )}
             </div>
           </div>
 
-          {/* 4. PRODUCT NAME */}
+          {/* 4. PRODUCT NAME — with dynamic suggestions per subcategory */}
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label className="text-xs">Product Name *</Label>
-              <Input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. White Teff" required />
+              <Input
+                list="product-name-suggestions"
+                value={name}
+                onChange={e => setName(e.target.value)}
+                placeholder={
+                  template.productNameSuggestions?.[subcategory]?.[0]
+                    ? `e.g. ${template.productNameSuggestions[subcategory][0]}`
+                    : 'e.g. White Teff'
+                }
+                required
+              />
+              {template.productNameSuggestions?.[subcategory] && (
+                <datalist id="product-name-suggestions">
+                  {template.productNameSuggestions[subcategory].map(s => (
+                    <option key={s} value={s} />
+                  ))}
+                </datalist>
+              )}
+              {template.productNameSuggestions?.[subcategory] && (
+                <div className="flex flex-wrap gap-1 pt-1">
+                  {template.productNameSuggestions[subcategory].slice(0, 6).map(s => (
+                    <button
+                      key={s}
+                      type="button"
+                      onClick={() => setName(s)}
+                      className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 transition"
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
             <div className="space-y-1.5">
               <Label className="text-xs">Name (Amharic)</Label>
               <Input value={nameAm} onChange={e => setNameAm(e.target.value)} placeholder="ነጭ ጤፍ" className="font-ethiopic" />
             </div>
           </div>
+
 
           {/* 5. SMART FIELDS — Auto generated by category/subcategory */}
           {(template.customFields?.length || 0) > 0 && (
