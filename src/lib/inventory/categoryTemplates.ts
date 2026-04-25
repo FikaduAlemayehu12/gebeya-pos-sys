@@ -32,6 +32,8 @@ export interface CategoryTemplate {
   customFields?: CustomField[];
   /** Suggested keywords on the standard product fields */
   hints?: string[];
+  /** Product-name suggestions, keyed by subcategory (or "_default" when no sub picked) */
+  productNameSuggestions?: Record<string, string[]>;
 }
 
 export const CATEGORY_TEMPLATES: Record<string, CategoryTemplate> = {
