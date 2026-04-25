@@ -236,6 +236,14 @@ export const CATEGORY_TEMPLATES: Record<string, CategoryTemplate> = {
     defaultTaxRate: 50,
     defaultReorderPoint: 12,
     subcategories: ['Beer', 'Wine', 'Whiskey', 'Vodka', 'Gin', 'Local Tej/Tella'],
+    productNameSuggestions: {
+      'Beer': ['St. George Lager', 'Habesha Beer', 'Bedele Special', 'Walia Beer', 'Heineken'],
+      'Wine': ['Awash Red Wine', 'Axumite White Wine', 'Castel Rouge', 'Rift Valley Rosé'],
+      'Whiskey': ['Johnnie Walker Black', 'Jack Daniels', 'Chivas Regal', 'Famous Grouse'],
+      'Vodka': ['Smirnoff', 'Absolut', 'Russian Standard'],
+      'Gin': ["Gordon's Gin", 'Bombay Sapphire', 'Beefeater'],
+      'Local Tej/Tella': ['Tej (Honey Wine)', 'Tella (Local Beer)', 'Korefe'],
+    },
     customFields: [
       { key: 'alcohol_percent', label: 'Alcohol %', type: 'number', required: true },
       { key: 'volume_ml', label: 'Volume (ml)', type: 'number' },
