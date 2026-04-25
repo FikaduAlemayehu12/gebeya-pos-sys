@@ -317,6 +317,14 @@ export const CATEGORY_TEMPLATES: Record<string, CategoryTemplate> = {
     trackExpiry: true,
     defaultReorderPoint: 20,
     subcategories: ['Bread', 'Cakes', 'Pastries', 'Cookies', 'Donuts', 'Muffins'],
+    productNameSuggestions: {
+      'Bread': ['White Bread Loaf', 'Whole Wheat Bread', 'Hambasha', 'Dabo Kolo', 'French Baguette'],
+      'Cakes': ['Birthday Cake', 'Chocolate Cake', 'Vanilla Cake', 'Carrot Cake', 'Wedding Cake'],
+      'Pastries': ['Croissant', 'Danish Pastry', 'Cinnamon Roll', 'Sambusa'],
+      'Cookies': ['Chocolate Chip Cookies', 'Butter Cookies', 'Oatmeal Cookies'],
+      'Donuts': ['Glazed Donut', 'Chocolate Donut', 'Jelly Donut'],
+      'Muffins': ['Blueberry Muffin', 'Chocolate Muffin', 'Banana Muffin'],
+    },
     customFields: [
       { key: 'baked_date', label: 'Baked Date', type: 'date' },
       { key: 'shelf_life_days', label: 'Shelf Life (days)', type: 'number' },
@@ -334,6 +342,13 @@ export const CATEGORY_TEMPLATES: Record<string, CategoryTemplate> = {
     trackExpiry: true,
     trackBatch: true,
     subcategories: ['Skincare', 'Makeup', 'Hair Care', 'Fragrance', 'Nail Care'],
+    productNameSuggestions: {
+      'Skincare': ['Face Moisturizer', 'Sunscreen SPF 50', 'Face Wash', 'Body Lotion', 'Anti-aging Cream'],
+      'Makeup': ['Foundation', 'Lipstick', 'Mascara', 'Eyeshadow Palette', 'Blush'],
+      'Hair Care': ['Shampoo', 'Conditioner', 'Hair Oil', 'Hair Mask'],
+      'Fragrance': ['Perfume EDT', 'Body Spray', 'Cologne', 'Deodorant'],
+      'Nail Care': ['Nail Polish', 'Nail Remover', 'Nail File'],
+    },
     customFields: [
       { key: 'volume_ml', label: 'Volume (ml)', type: 'number' },
       { key: 'skin_type', label: 'Skin Type', type: 'select', options: ['All', 'Dry', 'Oily', 'Sensitive', 'Combination'] },
@@ -343,6 +358,13 @@ export const CATEGORY_TEMPLATES: Record<string, CategoryTemplate> = {
     defaultUnit: 'Piece',
     defaultTaxRate: 15,
     subcategories: ['Men', 'Women', 'Kids', 'Traditional', 'Sportswear'],
+    productNameSuggestions: {
+      'Men': ["Men's T-Shirt", "Men's Jeans", "Men's Suit", "Men's Polo Shirt", "Men's Jacket"],
+      'Women': ["Women's Dress", "Women's Blouse", "Women's Skirt", "Women's Jeans", "Women's Cardigan"],
+      'Kids': ["Kids T-Shirt", "Kids Pants", "Baby Onesie", "Kids School Uniform"],
+      'Traditional': ['Habesha Kemis', 'Netela', 'Gabi', 'Kuta', 'Habesha Suit', 'Shamma'],
+      'Sportswear': ['Tracksuit', 'Sports Jersey', 'Yoga Pants', 'Running Shorts'],
+    },
     customFields: [
       { key: 'size', label: 'Size', type: 'select', options: ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'] },
       { key: 'color', label: 'Color', type: 'text' },
@@ -364,6 +386,15 @@ export const CATEGORY_TEMPLATES: Record<string, CategoryTemplate> = {
     defaultTaxRate: 15,
     defaultReorderPoint: 5,
     subcategories: ['Cement', 'Iron Bars', 'Bricks', 'Sand', 'Tiles', 'Paint', 'Wood'],
+    productNameSuggestions: {
+      'Cement': ['Dangote Cement 50kg', 'Mugher Cement 50kg', 'Derba Cement 50kg', 'National Cement 50kg'],
+      'Iron Bars': ['Rebar 8mm', 'Rebar 10mm', 'Rebar 12mm', 'Rebar 16mm', 'Rebar 20mm'],
+      'Bricks': ['HCB 15cm', 'HCB 20cm', 'Solid Brick', 'Red Clay Brick'],
+      'Sand': ['Fine Sand', 'Coarse Sand', 'River Sand', 'Crushed Sand'],
+      'Tiles': ['Floor Tile 60x60', 'Wall Tile 30x60', 'Porcelain Tile', 'Ceramic Tile'],
+      'Paint': ['Interior Emulsion', 'Exterior Paint', 'Wood Paint', 'Metal Primer', 'Roof Paint'],
+      'Wood': ['Plywood Sheet', 'MDF Board', 'Eucalyptus Pole', 'Pine Plank'],
+    },
     customFields: [
       { key: 'grade', label: 'Grade/Class', type: 'text' },
       { key: 'dimensions', label: 'Dimensions', type: 'text' },
