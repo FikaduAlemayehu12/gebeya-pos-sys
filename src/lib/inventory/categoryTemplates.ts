@@ -207,6 +207,15 @@ export const CATEGORY_TEMPLATES: Record<string, CategoryTemplate> = {
     defaultReorderPoint: 20,
     storageConditions: 'Cold storage 2-8°C',
     subcategories: ['Fresh Milk', 'Yogurt', 'Cheese', 'Butter', 'Ayib', 'Ergo', 'Cream'],
+    productNameSuggestions: {
+      'Fresh Milk': ['Whole Milk 1L', 'Skim Milk 1L', 'Family Milk 2L', 'Lame Milk 500ml'],
+      'Yogurt': ['Plain Yogurt', 'Strawberry Yogurt', 'Vanilla Yogurt', 'Greek Yogurt'],
+      'Cheese': ['Mozzarella', 'Cheddar', 'Cream Cheese', 'Cottage Cheese'],
+      'Butter': ['Salted Butter', 'Unsalted Butter', 'Niter Kibbeh (Spiced)'],
+      'Ayib': ['Fresh Ayib', 'Aged Ayib'],
+      'Ergo': ['Plain Ergo', 'Sweet Ergo'],
+      'Cream': ['Whipping Cream', 'Sour Cream', 'Heavy Cream'],
+    },
     customFields: [
       { key: 'fat_content', label: 'Fat Content %', type: 'number' },
       { key: 'pasteurized', label: 'Pasteurized', type: 'boolean' },
