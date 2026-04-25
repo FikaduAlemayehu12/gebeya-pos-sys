@@ -67,6 +67,16 @@ export const CATEGORY_TEMPLATES: Record<string, CategoryTemplate> = {
     defaultReorderPoint: 20,
     storageConditions: 'Cool, dry place below 25°C',
     subcategories: ['Tablets', 'Capsules', 'Syrup', 'Injection', 'Cream', 'Drops', 'Antibiotics', 'Vitamins'],
+    productNameSuggestions: {
+      'Tablets': ['Paracetamol 500mg', 'Ibuprofen 400mg', 'Aspirin 100mg', 'Metformin 500mg', 'Amlodipine 5mg'],
+      'Capsules': ['Amoxicillin 500mg', 'Omeprazole 20mg', 'Doxycycline 100mg', 'Fluconazole 150mg'],
+      'Syrup': ['Cough Syrup', 'Paracetamol Syrup', 'Iron Syrup', 'Vitamin C Syrup'],
+      'Injection': ['Ceftriaxone 1g', 'Insulin', 'Diclofenac Injection', 'Vitamin B12 Injection'],
+      'Cream': ['Hydrocortisone Cream', 'Antifungal Cream', 'Antibiotic Cream'],
+      'Drops': ['Eye Drops', 'Ear Drops', 'Nasal Drops'],
+      'Antibiotics': ['Amoxicillin 500mg', 'Azithromycin 500mg', 'Ciprofloxacin 500mg', 'Metronidazole 400mg'],
+      'Vitamins': ['Vitamin C 1000mg', 'Vitamin D3', 'Multivitamin', 'Iron + Folic Acid', 'Zinc Tablets'],
+    },
     customFields: [
       { key: 'batch_number', label: 'Batch Number', type: 'text', required: true },
       { key: 'dosage', label: 'Dosage', type: 'text', placeholder: 'e.g. 500mg' },
