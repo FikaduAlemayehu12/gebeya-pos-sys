@@ -273,6 +273,15 @@ export const CATEGORY_TEMPLATES: Record<string, CategoryTemplate> = {
     defaultUnit: 'Piece',
     defaultTaxRate: 15,
     subcategories: ['Doro Wat', 'Tibs', 'Kitfo', 'Shiro', 'Injera', 'Dulet', 'Beyaynetu'],
+    productNameSuggestions: {
+      'Doro Wat': ['Doro Wat (Full)', 'Doro Wat (Half)', 'Doro Wat with Egg'],
+      'Tibs': ['Beef Tibs', 'Lamb Tibs', 'Awaze Tibs', 'Shekla Tibs', 'Zilzil Tibs'],
+      'Kitfo': ['Kitfo Leb-Leb', 'Kitfo Tere', 'Kitfo Special'],
+      'Shiro': ['Shiro Wat', 'Bozena Shiro', 'Shiro Tegabino'],
+      'Injera': ['Teff Injera', 'Mixed Injera', 'Wheat Injera'],
+      'Dulet': ['Beef Dulet', 'Lamb Dulet'],
+      'Beyaynetu': ['Beyaynetu (Fasting)', 'Beyaynetu Special'],
+    },
     customFields: [
       { key: 'spice_level', label: 'Spice Level', type: 'select', options: ['Mild', 'Medium', 'Hot', 'Extra Hot'] },
       { key: 'fasting_friendly', label: 'Fasting (Tsom)', type: 'boolean' },
