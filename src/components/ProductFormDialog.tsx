@@ -13,9 +13,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Separator } from '@/components/ui/separator';
 import {
-  Plus, X, Loader2, Barcode, AlertTriangle, Upload, ImageIcon, Sparkles, Tag, Layers,
+  Plus, X, Loader2, Barcode, AlertTriangle, Upload, ImageIcon, Sparkles, Tag, Layers, Package, DollarSign, Boxes,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { logActivity } from '@/lib/activityLogger';
@@ -233,7 +233,6 @@ export default function ProductFormDialog({ onSuccess, editProduct, trigger }: P
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) { toast({ title: 'Missing fields', description: 'Product name is required.', variant: 'destructive' }); return; }
-    // Required custom fields
     for (const f of (template.customFields || [])) {
       if (f.required && !attributes[f.key]) {
         toast({ title: `Missing: ${f.label}`, description: 'This field is required for this category.', variant: 'destructive' });
@@ -337,6 +336,13 @@ export default function ProductFormDialog({ onSuccess, editProduct, trigger }: P
   };
 
   const subcatOptions = template.subcategories || [];
+  const SectionHeader = ({ icon: Icon, title, hint }: { icon: any; title: string; hint?: string }) => (
+    <div className="flex items-center gap-2 pt-1">
+      <Icon className="w-4 h-4 text-primary" />
+      <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+      {hint && <span className="text-[11px] text-muted-foreground">— {hint}</span>}
+    </div>
+  );
 
   return (
     <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) resetForm(); }}>
@@ -373,225 +379,229 @@ export default function ProductFormDialog({ onSuccess, editProduct, trigger }: P
           </div>
         )}
 
-        <form onSubmit={handleSubmit}>
-          <Tabs defaultValue="basic" className="w-full">
-            <TabsList className="grid grid-cols-4 w-full">
-              <TabsTrigger value="basic" className="text-xs">Basic</TabsTrigger>
-              <TabsTrigger value="pricing" className="text-xs">Pricing & Stock</TabsTrigger>
-              <TabsTrigger value="smart" className="text-xs gap-1">
-                <Sparkles className="w-3 h-3" /> Smart
-              </TabsTrigger>
-              <TabsTrigger value="variants" className="text-xs">Variants</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="basic" className="space-y-4 pt-4">
-              <div className="space-y-1.5">
-                <Label className="text-xs flex items-center gap-1.5"><ImageIcon className="w-3.5 h-3.5" /> Product Image</Label>
-                <div className="flex items-center gap-3">
-                  <div className="w-20 h-20 rounded-lg bg-muted border-2 border-dashed border-border flex items-center justify-center overflow-hidden shrink-0">
-                    {imageUrl ? <img src={imageUrl} alt="Product" className="w-full h-full object-cover rounded-lg" /> : <ImageIcon className="w-6 h-6 text-muted-foreground" />}
-                  </div>
-                  <div className="flex flex-col gap-1.5">
-                    <label className="inline-flex items-center gap-1.5 text-xs text-primary cursor-pointer hover:underline">
-                      {uploadingImage ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
-                      {uploadingImage ? 'Uploading...' : 'Upload Image'}
-                      <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
-                    </label>
-                    {imageUrl && <button type="button" onClick={() => setImageUrl('')} className="text-[10px] text-destructive hover:underline text-left">Remove</button>}
-                  </div>
-                </div>
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {/* 1. IMAGE FIRST */}
+          <div className="space-y-1.5">
+            <Label className="text-xs flex items-center gap-1.5"><ImageIcon className="w-3.5 h-3.5" /> Product Image</Label>
+            <div className="flex items-center gap-3">
+              <div className="w-20 h-20 rounded-lg bg-muted border-2 border-dashed border-border flex items-center justify-center overflow-hidden shrink-0">
+                {imageUrl ? <img src={imageUrl} alt="Product" className="w-full h-full object-cover rounded-lg" /> : <ImageIcon className="w-6 h-6 text-muted-foreground" />}
               </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <Label className="text-xs">Product Name *</Label>
-                  <Input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. White Teff" required />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs">Name (Amharic)</Label>
-                  <Input value={nameAm} onChange={e => setNameAm(e.target.value)} placeholder="ነጭ ጤፍ" className="font-ethiopic" />
-                </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="inline-flex items-center gap-1.5 text-xs text-primary cursor-pointer hover:underline">
+                  {uploadingImage ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
+                  {uploadingImage ? 'Uploading...' : 'Upload Image'}
+                  <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                </label>
+                {imageUrl && <button type="button" onClick={() => setImageUrl('')} className="text-[10px] text-destructive hover:underline text-left">Remove</button>}
+                <p className="text-[10px] text-muted-foreground">Upload first; fields below adapt to your category.</p>
               </div>
+            </div>
+          </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <Label className="text-xs flex items-center gap-1.5"><Tag className="w-3 h-3" /> Category *</Label>
-                  <Select value={categoryId} onValueChange={setCategoryId}>
-                    <SelectTrigger><SelectValue placeholder={loadingMeta ? 'Loading...' : 'Select category'} /></SelectTrigger>
-                    <SelectContent className="max-h-72">
-                      {categories.filter(c => !c.parent_id).map(c => (
-                        <SelectItem key={c.id} value={c.id}>
-                          {c.name} {c.name_am && <span className="text-[10px] text-muted-foreground font-ethiopic ml-1">{c.name_am}</span>}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs">Subcategory</Label>
-                  {subcatOptions.length > 0 ? (
-                    <Select value={subcategory} onValueChange={setSubcategory}>
-                      <SelectTrigger><SelectValue placeholder="Select..." /></SelectTrigger>
-                      <SelectContent>{subcatOptions.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
-                    </Select>
-                  ) : (
-                    <Input value={subcategory} onChange={e => setSubcategory(e.target.value)} placeholder="Optional" />
-                  )}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <Label className="text-xs">SKU</Label>
-                  <Input value={sku} onChange={e => setSku(e.target.value)} placeholder="Auto or custom" />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs flex items-center gap-1.5"><Barcode className="w-3.5 h-3.5" /> Barcode</Label>
-                  <Input value={barcode} onChange={e => setBarcode(e.target.value)} placeholder="Scan or enter..." />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <Label className="text-xs">Branch</Label>
-                  <Select value={branchId} onValueChange={setBranchId}>
-                    <SelectTrigger><SelectValue placeholder="All / select branch" /></SelectTrigger>
-                    <SelectContent>{branches.map(b => <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>)}</SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs">Supplier</Label>
-                  <Select value={supplierId} onValueChange={setSupplierId}>
-                    <SelectTrigger><SelectValue placeholder="Optional" /></SelectTrigger>
-                    <SelectContent>{suppliers.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              <div className="space-y-1.5">
-                <Label className="text-xs">Description</Label>
-                <Textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Optional notes..." rows={2} />
-              </div>
-            </TabsContent>
-
-            <TabsContent value="pricing" className="space-y-4 pt-4">
-              <div className="grid grid-cols-3 gap-3">
-                <div className="space-y-1.5">
-                  <Label className="text-xs">Selling Price *</Label>
-                  <Input type="number" min="0" step="0.01" value={price} onChange={e => setPrice(e.target.value)} placeholder="0.00" />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs">Cost Price</Label>
-                  <Input type="number" min="0" step="0.01" value={cost} onChange={e => setCost(e.target.value)} placeholder="0.00" />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs">Tax Rate (%)</Label>
-                  <Input type="number" min="0" step="0.01" value={taxRate} onChange={e => setTaxRate(e.target.value)} />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <Label className="text-xs">Unit</Label>
-                  <Select value={unit} onValueChange={setUnit}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>{ETHIOPIAN_UNITS.map(u => <SelectItem key={u} value={u}>{u}</SelectItem>)}</SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs">Storage Conditions</Label>
-                  <Input value={storageConditions} onChange={e => setStorageConditions(e.target.value)} placeholder="e.g. Cold storage" />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-4 gap-3">
-                <div className="space-y-1.5">
-                  <Label className="text-xs">{duplicateFound && !editProduct ? 'Stock to Add' : 'Stock'}</Label>
-                  <Input type="number" min="0" value={stock} onChange={e => setStock(e.target.value)} placeholder="0" />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs">Min Stock</Label>
-                  <Input type="number" min="0" value={minStock} onChange={e => setMinStock(e.target.value)} placeholder="0" />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs">Reorder Point</Label>
-                  <Input type="number" min="0" value={reorderPoint} onChange={e => setReorderPoint(e.target.value)} placeholder="5" />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs">Max Stock</Label>
-                  <Input type="number" min="0" value={maxStock} onChange={e => setMaxStock(e.target.value)} placeholder="∞" />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <Label className="text-xs">Expiry Date</Label>
-                  <Input type="date" value={expiryDate} onChange={e => setExpiryDate(e.target.value)} />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs">Warranty (months)</Label>
-                  <Input type="number" min="0" value={warrantyMonths} onChange={e => setWarrantyMonths(e.target.value)} />
-                </div>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="smart" className="space-y-4 pt-4">
-              <div className="grid grid-cols-3 gap-3 p-3 rounded-lg bg-muted/40">
-                <div className="flex items-center gap-2">
-                  <Switch checked={trackExpiry} onCheckedChange={setTrackExpiry} />
-                  <Label className="text-xs cursor-pointer">Track Expiry</Label>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Switch checked={trackBatch} onCheckedChange={setTrackBatch} />
-                  <Label className="text-xs cursor-pointer">Track Batch</Label>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Switch checked={trackSerial} onCheckedChange={setTrackSerial} />
-                  <Label className="text-xs cursor-pointer">Track Serial</Label>
-                </div>
-              </div>
-
-              {(template.customFields?.length || 0) === 0 ? (
-                <div className="text-center py-8 text-sm text-muted-foreground">
-                  <Layers className="w-8 h-8 mx-auto mb-2 opacity-40" />
-                  Select a category to load smart fields.
-                </div>
+          {/* 2. CATEGORY → 3. SUBCATEGORY */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <Label className="text-xs flex items-center gap-1.5"><Tag className="w-3 h-3" /> Category *</Label>
+              <Select value={categoryId} onValueChange={setCategoryId}>
+                <SelectTrigger><SelectValue placeholder={loadingMeta ? 'Loading...' : 'Select category'} /></SelectTrigger>
+                <SelectContent className="max-h-72">
+                  {categories.filter(c => !c.parent_id).map(c => (
+                    <SelectItem key={c.id} value={c.id}>
+                      {c.name} {c.name_am && <span className="text-[10px] text-muted-foreground font-ethiopic ml-1">{c.name_am}</span>}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Subcategory</Label>
+              {subcatOptions.length > 0 ? (
+                <Select value={subcategory} onValueChange={setSubcategory}>
+                  <SelectTrigger><SelectValue placeholder="Select..." /></SelectTrigger>
+                  <SelectContent>{subcatOptions.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+                </Select>
               ) : (
-                <div className="grid grid-cols-2 gap-3">
-                  {template.customFields!.map(f => (
-                    <div key={f.key} className="space-y-1.5">
-                      <Label className="text-xs">
-                        {f.label} {f.required && <span className="text-destructive">*</span>}
-                      </Label>
-                      {renderCustomField(f)}
-                      {f.helper && <p className="text-[10px] text-muted-foreground">{f.helper}</p>}
-                    </div>
-                  ))}
-                </div>
+                <Input value={subcategory} onChange={e => setSubcategory(e.target.value)} placeholder={categoryId ? 'Optional' : 'Pick a category first'} disabled={!categoryId} />
               )}
-            </TabsContent>
+            </div>
+          </div>
 
-            <TabsContent value="variants" className="space-y-3 pt-4">
-              {variants.length > 0 && (
-                <div className="flex flex-wrap gap-1.5">
-                  {variants.map((v, i) => (
-                    <Badge key={i} variant="secondary" className="gap-1 text-xs">
-                      {v.name} (ETB {v.price}) ×{v.stock}
-                      <button type="button" onClick={() => removeVariant(i)}><X className="w-3 h-3" /></button>
-                    </Badge>
-                  ))}
-                </div>
-              )}
-              <div className="flex gap-2">
-                <Input value={variantName} onChange={e => setVariantName(e.target.value)} placeholder="Variant name" className="flex-1 text-xs" />
-                <Input type="number" value={variantPrice} onChange={e => setVariantPrice(e.target.value)} placeholder="Price" className="w-24 text-xs" />
-                <Input type="number" value={variantStock} onChange={e => setVariantStock(e.target.value)} placeholder="Stock" className="w-24 text-xs" />
-                <Button type="button" size="sm" variant="outline" onClick={addVariant}><Plus className="w-3.5 h-3.5" /></Button>
+          {/* 4. PRODUCT NAME */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <Label className="text-xs">Product Name *</Label>
+              <Input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. White Teff" required />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Name (Amharic)</Label>
+              <Input value={nameAm} onChange={e => setNameAm(e.target.value)} placeholder="ነጭ ጤፍ" className="font-ethiopic" />
+            </div>
+          </div>
+
+          {/* 5. SMART FIELDS — Auto generated by category/subcategory */}
+          {(template.customFields?.length || 0) > 0 && (
+            <>
+              <Separator />
+              <SectionHeader icon={Sparkles} title="Category Specifications" hint={`Auto-loaded for ${selectedCategory?.name}`} />
+              <div className="grid grid-cols-2 gap-3 p-3 rounded-lg bg-muted/30 border border-border">
+                {template.customFields!.map(f => (
+                  <div key={f.key} className="space-y-1.5">
+                    <Label className="text-xs">
+                      {f.label} {f.required && <span className="text-destructive">*</span>}
+                    </Label>
+                    {renderCustomField(f)}
+                    {f.helper && <p className="text-[10px] text-muted-foreground">{f.helper}</p>}
+                  </div>
+                ))}
               </div>
-            </TabsContent>
-          </Tabs>
+            </>
+          )}
+          {!categoryId && (
+            <div className="flex items-center gap-2 p-3 rounded-lg bg-primary/5 border border-primary/20 text-xs text-muted-foreground">
+              <Layers className="w-4 h-4 text-primary shrink-0" />
+              Select a category to unlock smart fields tailored to that product type.
+            </div>
+          )}
 
-          <Button type="submit" className="w-full mt-6 gradient-primary text-primary-foreground" disabled={saving}>
+          {/* 6. IDENTIFIERS */}
+          <Separator />
+          <SectionHeader icon={Barcode} title="Identifiers" />
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <Label className="text-xs">SKU</Label>
+              <Input value={sku} onChange={e => setSku(e.target.value)} placeholder="Auto or custom" />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs flex items-center gap-1.5"><Barcode className="w-3.5 h-3.5" /> Barcode</Label>
+              <Input value={barcode} onChange={e => setBarcode(e.target.value)} placeholder="Scan or enter..." />
+            </div>
+          </div>
+
+          {/* 7. ASSIGNMENT */}
+          <SectionHeader icon={Package} title="Branch & Supplier" />
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <Label className="text-xs">Branch</Label>
+              <Select value={branchId} onValueChange={setBranchId}>
+                <SelectTrigger><SelectValue placeholder="All / select branch" /></SelectTrigger>
+                <SelectContent>{branches.map(b => <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Supplier</Label>
+              <Select value={supplierId} onValueChange={setSupplierId}>
+                <SelectTrigger><SelectValue placeholder="Optional" /></SelectTrigger>
+                <SelectContent>{suppliers.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {/* 8. PRICING */}
+          <Separator />
+          <SectionHeader icon={DollarSign} title="Pricing" />
+          <div className="grid grid-cols-3 gap-3">
+            <div className="space-y-1.5">
+              <Label className="text-xs">Selling Price *</Label>
+              <Input type="number" min="0" step="0.01" value={price} onChange={e => setPrice(e.target.value)} placeholder="0.00" />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Cost Price</Label>
+              <Input type="number" min="0" step="0.01" value={cost} onChange={e => setCost(e.target.value)} placeholder="0.00" />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Tax Rate (%)</Label>
+              <Input type="number" min="0" step="0.01" value={taxRate} onChange={e => setTaxRate(e.target.value)} />
+            </div>
+          </div>
+
+          {/* 9. STOCK */}
+          <SectionHeader icon={Boxes} title="Stock & Units" />
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <Label className="text-xs">Unit</Label>
+              <Select value={unit} onValueChange={setUnit}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>{ETHIOPIAN_UNITS.map(u => <SelectItem key={u} value={u}>{u}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Storage Conditions</Label>
+              <Input value={storageConditions} onChange={e => setStorageConditions(e.target.value)} placeholder="e.g. Cold storage" />
+            </div>
+          </div>
+          <div className="grid grid-cols-4 gap-3">
+            <div className="space-y-1.5">
+              <Label className="text-xs">{duplicateFound && !editProduct ? 'Stock to Add' : 'Stock'}</Label>
+              <Input type="number" min="0" value={stock} onChange={e => setStock(e.target.value)} placeholder="0" />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Min Stock</Label>
+              <Input type="number" min="0" value={minStock} onChange={e => setMinStock(e.target.value)} placeholder="0" />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Reorder Point</Label>
+              <Input type="number" min="0" value={reorderPoint} onChange={e => setReorderPoint(e.target.value)} placeholder="5" />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Max Stock</Label>
+              <Input type="number" min="0" value={maxStock} onChange={e => setMaxStock(e.target.value)} placeholder="∞" />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <Label className="text-xs">Expiry Date</Label>
+              <Input type="date" value={expiryDate} onChange={e => setExpiryDate(e.target.value)} />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Warranty (months)</Label>
+              <Input type="number" min="0" value={warrantyMonths} onChange={e => setWarrantyMonths(e.target.value)} />
+            </div>
+          </div>
+
+          {/* 10. TRACKING */}
+          <div className="grid grid-cols-3 gap-3 p-3 rounded-lg bg-muted/40">
+            <div className="flex items-center gap-2">
+              <Switch checked={trackExpiry} onCheckedChange={setTrackExpiry} />
+              <Label className="text-xs cursor-pointer">Track Expiry</Label>
+            </div>
+            <div className="flex items-center gap-2">
+              <Switch checked={trackBatch} onCheckedChange={setTrackBatch} />
+              <Label className="text-xs cursor-pointer">Track Batch</Label>
+            </div>
+            <div className="flex items-center gap-2">
+              <Switch checked={trackSerial} onCheckedChange={setTrackSerial} />
+              <Label className="text-xs cursor-pointer">Track Serial</Label>
+            </div>
+          </div>
+
+          {/* 11. DESCRIPTION */}
+          <div className="space-y-1.5">
+            <Label className="text-xs">Description</Label>
+            <Textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Optional notes..." rows={2} />
+          </div>
+
+          {/* 12. VARIANTS */}
+          <Separator />
+          <SectionHeader icon={Layers} title="Variants" hint="Optional — sizes, colors, packs" />
+          {variants.length > 0 && (
+            <div className="flex flex-wrap gap-1.5">
+              {variants.map((v, i) => (
+                <Badge key={i} variant="secondary" className="gap-1 text-xs">
+                  {v.name} (ETB {v.price}) ×{v.stock}
+                  <button type="button" onClick={() => removeVariant(i)}><X className="w-3 h-3" /></button>
+                </Badge>
+              ))}
+            </div>
+          )}
+          <div className="flex gap-2">
+            <Input value={variantName} onChange={e => setVariantName(e.target.value)} placeholder="Variant name" className="flex-1 text-xs" />
+            <Input type="number" value={variantPrice} onChange={e => setVariantPrice(e.target.value)} placeholder="Price" className="w-24 text-xs" />
+            <Input type="number" value={variantStock} onChange={e => setVariantStock(e.target.value)} placeholder="Stock" className="w-24 text-xs" />
+            <Button type="button" size="sm" variant="outline" onClick={addVariant}><Plus className="w-3.5 h-3.5" /></Button>
+          </div>
+
+          <Button type="submit" className="w-full mt-4 gradient-primary text-primary-foreground" disabled={saving}>
             {saving && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
             {editProduct ? 'Update Product' : duplicateFound ? 'Update Existing Stock' : 'Register Product'}
           </Button>
