@@ -128,6 +128,16 @@ export const CATEGORY_TEMPLATES: Record<string, CategoryTemplate> = {
     defaultWarrantyMonths: 12,
     defaultReorderPoint: 5,
     subcategories: ['Phones', 'TVs', 'Audio', 'Cameras', 'Cables', 'Chargers', 'Speakers', 'Accessories'],
+    productNameSuggestions: {
+      'Phones': ['Samsung Galaxy A14', 'Tecno Spark 10', 'iPhone 13', 'Infinix Hot 30', 'Xiaomi Redmi Note 12'],
+      'TVs': ['Samsung 43" Smart TV', 'LG 32" LED TV', 'Sony Bravia 50"', 'Hisense 55" 4K'],
+      'Audio': ['JBL Speaker', 'Bluetooth Headphones', 'Sound Bar', 'Earbuds'],
+      'Cameras': ['Canon EOS', 'Nikon DSLR', 'Sony Mirrorless', 'GoPro Hero'],
+      'Cables': ['HDMI Cable', 'USB-C Cable', 'Lightning Cable', 'Aux Cable'],
+      'Chargers': ['Fast Charger 25W', 'Wireless Charger', 'Power Bank 10000mAh', 'Car Charger'],
+      'Speakers': ['Bluetooth Speaker', 'Home Theater', 'Portable Speaker'],
+      'Accessories': ['Phone Case', 'Screen Protector', 'Memory Card', 'Tripod'],
+    },
     customFields: [
       { key: 'serial_number', label: 'Serial Number / IMEI', type: 'text' },
       { key: 'manufacturer', label: 'Brand', type: 'text' },
@@ -154,6 +164,14 @@ export const CATEGORY_TEMPLATES: Record<string, CategoryTemplate> = {
     defaultWarrantyMonths: 36,
     defaultReorderPoint: 1,
     subcategories: ['Cars', 'Trucks', 'Motorcycles', 'Buses', 'Pickups', 'Spare Parts'],
+    productNameSuggestions: {
+      'Cars': ['Toyota Corolla', 'Toyota Vitz', 'Hyundai Accent', 'Kia Picanto', 'Suzuki Dzire'],
+      'Trucks': ['Isuzu FSR', 'Sino Truck Howo', 'FAW Tipper', 'Mitsubishi Canter'],
+      'Motorcycles': ['Bajaj Boxer', 'TVS Star', 'Yamaha Crux', 'Honda CB125'],
+      'Buses': ['Toyota Coaster', 'Higer Bus', 'Yutong Bus', 'King Long'],
+      'Pickups': ['Toyota Hilux', 'Isuzu D-Max', 'Mitsubishi L200', 'Ford Ranger'],
+      'Spare Parts': ['Brake Pad', 'Engine Oil', 'Air Filter', 'Tire', 'Battery', 'Spark Plug'],
+    },
     customFields: [
       { key: 'chassis_number', label: 'Chassis Number (VIN)', type: 'text', required: true },
       { key: 'engine_number', label: 'Engine Number', type: 'text', required: true },
@@ -167,6 +185,14 @@ export const CATEGORY_TEMPLATES: Record<string, CategoryTemplate> = {
     defaultUnit: 'Piece',
     defaultReorderPoint: 3,
     subcategories: ['Sofas', 'Beds', 'Tables', 'Chairs', 'Wardrobes', 'Office Furniture'],
+    productNameSuggestions: {
+      'Sofas': ['3-Seater Sofa', 'L-Shape Sectional', 'Recliner Sofa', 'Loveseat'],
+      'Beds': ['King Size Bed', 'Queen Size Bed', 'Single Bed', 'Bunk Bed'],
+      'Tables': ['Dining Table', 'Coffee Table', 'Office Desk', 'Side Table'],
+      'Chairs': ['Office Chair', 'Dining Chair', 'Plastic Chair', 'Bar Stool'],
+      'Wardrobes': ['3-Door Wardrobe', '4-Door Wardrobe', 'Sliding Wardrobe'],
+      'Office Furniture': ['Executive Desk', 'Filing Cabinet', 'Conference Table', 'Reception Counter'],
+    },
     customFields: [
       { key: 'material', label: 'Material', type: 'text', placeholder: 'Wood, Metal, Fabric' },
       { key: 'dimensions', label: 'Dimensions (LxWxH)', type: 'text' },
