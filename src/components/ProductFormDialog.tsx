@@ -89,6 +89,10 @@ export default function ProductFormDialog({ onSuccess, editProduct, trigger }: P
     return mergeTemplate(base, schemas[selectedCategory.id]);
   }, [selectedCategory, schemas]);
 
+  // "Other" (custom) subcategory state
+  const [subcategoryMode, setSubcategoryMode] = useState<'preset' | 'other'>('preset');
+  const OTHER_SENTINEL = '__other__';
+
   // Load metadata once dialog opens
   useEffect(() => {
     if (!open) return;
