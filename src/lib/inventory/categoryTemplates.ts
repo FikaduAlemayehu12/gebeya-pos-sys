@@ -42,6 +42,17 @@ export const CATEGORY_TEMPLATES: Record<string, CategoryTemplate> = {
     defaultTaxRate: 0,
     defaultReorderPoint: 10,
     subcategories: ['Teff', 'Wheat', 'Barley', 'Maize', 'Coffee Beans', 'Sesame', 'Spices', 'Vegetables', 'Fruits'],
+    productNameSuggestions: {
+      'Teff': ['White Teff (Magna)', 'Red Teff (Quey)', 'Mixed Teff (Sergegna)', 'Bunign Teff'],
+      'Wheat': ['Soft Wheat', 'Hard Wheat (Durum)', 'Bread Wheat', 'Whole Wheat'],
+      'Barley': ['Food Barley', 'Malt Barley', 'Hulless Barley'],
+      'Maize': ['Yellow Maize', 'White Maize', 'Hybrid Maize'],
+      'Coffee Beans': ['Yirgacheffe', 'Sidamo', 'Harrar', 'Limu', 'Jimma', 'Guji', 'Washed Arabica', 'Natural Arabica'],
+      'Sesame': ['White Sesame (Humera)', 'Mixed Sesame (Wollega)'],
+      'Spices': ['Berbere', 'Mitmita', 'Korerima', 'Black Cumin (Tikur Azmud)', 'Turmeric', 'Ginger', 'Garlic Powder'],
+      'Vegetables': ['Tomato', 'Onion', 'Potato', 'Carrot', 'Cabbage', 'Pepper', 'Lettuce', 'Spinach'],
+      'Fruits': ['Banana', 'Mango', 'Avocado', 'Orange', 'Papaya', 'Pineapple', 'Apple', 'Lemon'],
+    },
     customFields: [
       { key: 'origin_region', label: 'Origin Region', type: 'text', placeholder: 'e.g. Oromia, Sidama' },
       { key: 'harvest_date', label: 'Harvest Date', type: 'date' },
