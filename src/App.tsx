@@ -17,6 +17,7 @@ import Auth from "@/pages/Auth";
 import NotFound from "./pages/NotFound";
 import TransactionView from "@/pages/TransactionView";
 import HrPayroll from "@/pages/HrPayroll";
+import Attendance from "@/pages/Attendance";
 import Finance from "@/pages/Finance";
 import Procurement from "@/pages/Procurement";
 import Branches from "@/pages/Branches";
@@ -74,6 +75,7 @@ const AppRoutes = () => (
     <Route path="/reports" element={<ProtectedRoute roles={["admin", "manager", "finance_manager"]} requireFullAccess><AppLayout><Reports /></AppLayout></ProtectedRoute>} />
     <Route path="/admin" element={<ProtectedRoute roles={["admin"]}><AppLayout><AdminPanel /></AppLayout></ProtectedRoute>} />
     <Route path="/hr" element={<ProtectedRoute><AppLayout><HrPayroll /></AppLayout></ProtectedRoute>} />
+    <Route path="/attendance" element={<ProtectedRoute><AppLayout><Attendance /></AppLayout></ProtectedRoute>} />
     <Route path="/finance" element={<ProtectedRoute roles={["admin", "finance_manager", "auditor"]}><AppLayout><Finance /></AppLayout></ProtectedRoute>} />
     <Route path="/procurement" element={<ProtectedRoute roles={["admin", "procurement", "inventory_manager"]}><AppLayout><Procurement /></AppLayout></ProtectedRoute>} />
     <Route path="/branches" element={<ProtectedRoute roles={["admin", "hr_admin", "manager"]}><AppLayout><Branches /></AppLayout></ProtectedRoute>} />
