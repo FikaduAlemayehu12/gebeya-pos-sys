@@ -289,48 +289,75 @@ export type Database = {
       attendance: {
         Row: {
           branch_id: string | null
+          check_in_method: string
           clock_in: string | null
           clock_out: string | null
+          clock_out_lat: number | null
+          clock_out_lng: number | null
           created_at: string
           date: string
           employee_id: string
+          geo_accuracy: number | null
+          geo_lat: number | null
+          geo_lng: number | null
           hours_worked: number
           id: string
+          is_late: boolean
           notes: string | null
           overtime_hours: number
           recorded_by: string | null
+          selfie_url: string | null
+          session_number: number
           status: string
           tenant_id: string | null
           updated_at: string
         }
         Insert: {
           branch_id?: string | null
+          check_in_method?: string
           clock_in?: string | null
           clock_out?: string | null
+          clock_out_lat?: number | null
+          clock_out_lng?: number | null
           created_at?: string
           date?: string
           employee_id: string
+          geo_accuracy?: number | null
+          geo_lat?: number | null
+          geo_lng?: number | null
           hours_worked?: number
           id?: string
+          is_late?: boolean
           notes?: string | null
           overtime_hours?: number
           recorded_by?: string | null
+          selfie_url?: string | null
+          session_number?: number
           status?: string
           tenant_id?: string | null
           updated_at?: string
         }
         Update: {
           branch_id?: string | null
+          check_in_method?: string
           clock_in?: string | null
           clock_out?: string | null
+          clock_out_lat?: number | null
+          clock_out_lng?: number | null
           created_at?: string
           date?: string
           employee_id?: string
+          geo_accuracy?: number | null
+          geo_lat?: number | null
+          geo_lng?: number | null
           hours_worked?: number
           id?: string
+          is_late?: boolean
           notes?: string | null
           overtime_hours?: number
           recorded_by?: string | null
+          selfie_url?: string | null
+          session_number?: number
           status?: string
           tenant_id?: string | null
           updated_at?: string
@@ -358,6 +385,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      attendance_settings: {
+        Row: {
+          allowed_radius_m: number
+          created_at: string
+          expected_clock_in: string
+          id: string
+          late_grace_minutes: number
+          office_lat: number | null
+          office_lng: number | null
+          require_geo: boolean
+          require_selfie: boolean
+          tenant_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          allowed_radius_m?: number
+          created_at?: string
+          expected_clock_in?: string
+          id?: string
+          late_grace_minutes?: number
+          office_lat?: number | null
+          office_lng?: number | null
+          require_geo?: boolean
+          require_selfie?: boolean
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          allowed_radius_m?: number
+          created_at?: string
+          expected_clock_in?: string
+          id?: string
+          late_grace_minutes?: number
+          office_lat?: number | null
+          office_lng?: number | null
+          require_geo?: boolean
+          require_selfie?: boolean
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       audit_logs: {
         Row: {
