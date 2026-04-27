@@ -219,7 +219,7 @@ function AttendanceTab({ canManage }: { canManage: boolean }) {
   const load = useCallback(async () => {
     setLoading(true);
     const [a, e] = await Promise.all([
-      supabase.from('attendance').select('*, employees(full_name, employee_code)').eq('date', date).order('created_at', { ascending: false }),
+      supabase.from('attendance').select('*, employees(full_name, employee_code)').eq('date', date).order('clock_in', { ascending: true }),
       supabase.from('employees').select('id, full_name, employee_code, branch_id').eq('status', 'active').order('full_name'),
     ]);
     setRecords(a.data || []);
@@ -229,23 +229,23 @@ function AttendanceTab({ canManage }: { canManage: boolean }) {
 
   useEffect(() => { load(); }, [load]);
 
-  const clockIn = async (employee_id: string, branch_id: string | null) => {
-    const now = new Date().toISOString();
-    const { error } = await supabase.from('attendance').upsert({
-      employee_id, branch_id, date, clock_in: now, status: 'present', recorded_by: user?.id,
-    } as any, { onConflict: 'employee_id,date' });
+  const quickClockIn = async (employee_id: string, branch_id: string | null) => {
+    const sessionsToday = records.filter(r => r.employee_id === employee_id).length;
+    const { error } = await supabase.from('attendance').insert({
+      employee_id, branch_id, date, clock_in: new Date().toISOString(),
+      status: 'present', recorded_by: user?.id, session_number: sessionsToday + 1, check_in_method: 'manual',
+    } as any);
     if (error) { toast({ title: error.message, variant: 'destructive' }); return; }
     toast({ title: 'Clocked in' });
     load();
   };
 
-  const clockOut = async (rec: any) => {
+  const quickClockOut = async (rec: any) => {
     const now = new Date();
     const inTime = rec.clock_in ? new Date(rec.clock_in) : now;
     const hours = Math.max(0, (now.getTime() - inTime.getTime()) / 3600000);
     const { error } = await supabase.from('attendance').update({
-      clock_out: now.toISOString(),
-      hours_worked: +hours.toFixed(2),
+      clock_out: now.toISOString(), hours_worked: +hours.toFixed(2),
     }).eq('id', rec.id);
     if (error) { toast({ title: error.message, variant: 'destructive' }); return; }
     toast({ title: 'Clocked out', description: `${hours.toFixed(2)} hours recorded` });
@@ -254,6 +254,13 @@ function AttendanceTab({ canManage }: { canManage: boolean }) {
 
   return (
     <div className="space-y-4">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
+        <MyAttendanceCard onChange={load} />
+        <LiveAttendanceIndicators />
+      </div>
+
+      {canManage && <AttendanceSettingsCard />}
+
       <div className="flex flex-col sm:flex-row gap-2 items-end">
         <div>
           <Label className="text-xs">Date</Label>
@@ -263,21 +270,20 @@ function AttendanceTab({ canManage }: { canManage: boolean }) {
 
       {canManage && (
         <Card className="bg-card">
-          <CardHeader className="pb-2"><CardTitle className="text-sm">Quick Clock-In</CardTitle></CardHeader>
+          <CardHeader className="pb-2"><CardTitle className="text-sm">Quick Clock-In (Manager)</CardTitle></CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
               {employees.map(e => {
-                const rec = records.find(r => r.employee_id === e.id);
+                const open = records.find(r => r.employee_id === e.id && !r.clock_out);
+                const sessions = records.filter(r => r.employee_id === e.id);
                 return (
                   <div key={e.id} className="border rounded-lg p-2.5 text-xs">
                     <div className="font-medium truncate">{e.full_name}</div>
-                    <div className="text-muted-foreground text-[10px] mb-1.5">{e.employee_code}</div>
-                    {!rec ? (
-                      <Button size="sm" className="w-full h-7 text-[11px]" onClick={() => clockIn(e.id, e.branch_id)}>Clock In</Button>
-                    ) : !rec.clock_out ? (
-                      <Button size="sm" variant="outline" className="w-full h-7 text-[11px]" onClick={() => clockOut(rec)}>Clock Out</Button>
+                    <div className="text-muted-foreground text-[10px] mb-1.5">{e.employee_code} · {sessions.length} session{sessions.length === 1 ? '' : 's'}</div>
+                    {open ? (
+                      <Button size="sm" variant="outline" className="w-full h-7 text-[11px]" onClick={() => quickClockOut(open)}>Clock Out</Button>
                     ) : (
-                      <Badge variant="default" className="w-full justify-center text-[10px]">Done • {Number(rec.hours_worked).toFixed(1)}h</Badge>
+                      <Button size="sm" className="w-full h-7 text-[11px]" onClick={() => quickClockIn(e.id, e.branch_id)}>Clock In</Button>
                     )}
                   </div>
                 );
@@ -298,7 +304,7 @@ function AttendanceTab({ canManage }: { canManage: boolean }) {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Employee</TableHead><TableHead>Clock In</TableHead><TableHead>Clock Out</TableHead>
+                  <TableHead>Employee</TableHead><TableHead>Session</TableHead><TableHead>Clock In</TableHead><TableHead>Clock Out</TableHead>
                   <TableHead className="text-right">Hours</TableHead><TableHead>Status</TableHead>
                 </TableRow>
               </TableHeader>
@@ -309,10 +315,14 @@ function AttendanceTab({ canManage }: { canManage: boolean }) {
                       <div className="font-medium text-sm">{r.employees?.full_name}</div>
                       <div className="text-xs text-muted-foreground">{r.employees?.employee_code}</div>
                     </TableCell>
+                    <TableCell className="text-xs">#{r.session_number || 1}</TableCell>
                     <TableCell className="text-sm">{r.clock_in ? format(new Date(r.clock_in), 'HH:mm') : '-'}</TableCell>
                     <TableCell className="text-sm">{r.clock_out ? format(new Date(r.clock_out), 'HH:mm') : '-'}</TableCell>
                     <TableCell className="text-right text-sm font-mono">{Number(r.hours_worked || 0).toFixed(2)}</TableCell>
-                    <TableCell><Badge variant="outline" className="capitalize text-[10px]">{r.status}</Badge></TableCell>
+                    <TableCell className="space-x-1">
+                      <Badge variant="outline" className="capitalize text-[10px]">{r.status}</Badge>
+                      {r.is_late && <Badge variant="destructive" className="text-[10px]">late</Badge>}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
