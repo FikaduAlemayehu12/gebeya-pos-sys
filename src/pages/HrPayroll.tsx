@@ -15,6 +15,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import EmployeeFormDialog from '@/components/hr/EmployeeFormDialog';
 import HrAiAssistant from '@/components/hr/HrAiAssistant';
+import MyAttendanceCard from '@/components/hr/MyAttendanceCard';
+import LiveAttendanceIndicators from '@/components/hr/LiveAttendanceIndicators';
+import AttendanceSettingsCard from '@/components/hr/AttendanceSettingsCard';
 import { calculatePayroll, formatETB } from '@/lib/payroll';
 import { exportPayslipPdf } from '@/lib/payslipPdf';
 import {
