@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, LogIn, LogOut, MapPin, Camera, Clock } from 'lucide-react';
 import { format } from 'date-fns';
+import { splitWorkHours, isEthiopianHoliday } from '@/lib/ethiopianHolidays';
 
 type Settings = {
   office_lat: number | null;
@@ -195,19 +196,28 @@ export default function MyAttendanceCard({ onChange }: { onChange?: () => void }
 
       const nowDate = new Date();
       const inTime = new Date(openSession.clock_in);
-      const hours = Math.max(0, (nowDate.getTime() - inTime.getTime()) / 3600000);
+      // Cap clock-out at end of clock-in day if it crossed midnight
+      const inDay = inTime.toISOString().slice(0, 10);
+      const nowDay = nowDate.toISOString().slice(0, 10);
+      const effectiveOut = inDay !== nowDay ? new Date(inDay + 'T23:59:59') : nowDate;
+      const { total, overtime } = splitWorkHours(inTime, effectiveOut);
 
       const { error } = await supabase
         .from('attendance')
         .update({
-          clock_out: nowDate.toISOString(),
-          hours_worked: +hours.toFixed(2),
+          clock_out: effectiveOut.toISOString(),
+          hours_worked: total,
+          overtime_hours: overtime,
           clock_out_lat: geo?.lat ?? null,
           clock_out_lng: geo?.lng ?? null,
         })
         .eq('id', openSession.id);
       if (error) throw error;
-      toast({ title: 'Clocked out', description: `${hours.toFixed(2)}h recorded` });
+      const holiday = isEthiopianHoliday(inDay);
+      toast({
+        title: 'Clocked out',
+        description: `${total.toFixed(2)}h total · ${overtime.toFixed(2)}h overtime${holiday ? ` · ${holiday.name}` : ''}`,
+      });
       await load();
       onChange?.();
     } catch (e: any) {

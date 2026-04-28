@@ -1914,6 +1914,210 @@ export type Database = {
           },
         ]
       }
+      performance_summaries: {
+        Row: {
+          average_grade: number
+          created_at: string
+          flagged_count: number
+          id: string
+          notes: string | null
+          period_key: string
+          period_type: string
+          staff_id: string
+          status: string
+          tenant_id: string | null
+          total_plans: number
+          updated_at: string
+        }
+        Insert: {
+          average_grade?: number
+          created_at?: string
+          flagged_count?: number
+          id?: string
+          notes?: string | null
+          period_key: string
+          period_type: string
+          staff_id: string
+          status?: string
+          tenant_id?: string | null
+          total_plans?: number
+          updated_at?: string
+        }
+        Update: {
+          average_grade?: number
+          created_at?: string
+          flagged_count?: number
+          id?: string
+          notes?: string | null
+          period_key?: string
+          period_type?: string
+          staff_id?: string
+          status?: string
+          tenant_id?: string | null
+          total_plans?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      plan_comments: {
+        Row: {
+          author_id: string
+          content: string
+          created_at: string
+          id: string
+          plan_id: string
+          tenant_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          author_id: string
+          content: string
+          created_at?: string
+          id?: string
+          plan_id: string
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          plan_id?: string
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      plan_performance_records: {
+        Row: {
+          achievement_pct: number | null
+          actual_value: number
+          created_at: string
+          flagged: boolean
+          grade: number
+          id: string
+          notes: string | null
+          period_key: string
+          plan_id: string
+          plan_type: string
+          planned_value: number
+          staff_id: string
+          status: string
+          tenant_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          achievement_pct?: number | null
+          actual_value?: number
+          created_at?: string
+          flagged?: boolean
+          grade?: number
+          id?: string
+          notes?: string | null
+          period_key: string
+          plan_id: string
+          plan_type?: string
+          planned_value?: number
+          staff_id: string
+          status?: string
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          achievement_pct?: number | null
+          actual_value?: number
+          created_at?: string
+          flagged?: boolean
+          grade?: number
+          id?: string
+          notes?: string | null
+          period_key?: string
+          plan_id?: string
+          plan_type?: string
+          planned_value?: number
+          staff_id?: string
+          status?: string
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      plan_reactions: {
+        Row: {
+          created_at: string
+          id: string
+          plan_id: string
+          reaction: string
+          tenant_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          plan_id: string
+          reaction: string
+          tenant_id?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          plan_id?: string
+          reaction?: string
+          tenant_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      plans: {
+        Row: {
+          attachment_urls: string[] | null
+          author_id: string
+          content: string
+          created_at: string
+          due_date: string | null
+          employee_id: string | null
+          id: string
+          mentioned_user_ids: string[] | null
+          plan_type: string
+          status: string
+          tenant_id: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          attachment_urls?: string[] | null
+          author_id: string
+          content?: string
+          created_at?: string
+          due_date?: string | null
+          employee_id?: string | null
+          id?: string
+          mentioned_user_ids?: string[] | null
+          plan_type?: string
+          status?: string
+          tenant_id?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          attachment_urls?: string[] | null
+          author_id?: string
+          content?: string
+          created_at?: string
+          due_date?: string | null
+          employee_id?: string | null
+          id?: string
+          mentioned_user_ids?: string[] | null
+          plan_type?: string
+          status?: string
+          tenant_id?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       pos_activity_logs: {
         Row: {
           action_type: string
