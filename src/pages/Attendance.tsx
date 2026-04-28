@@ -133,10 +133,8 @@ function TodayTab({ canManage }: { canManage: boolean }) {
   const [reload, setReload] = useState(0);
   return (
     <div className="space-y-4">
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
-        <MyAttendanceCard onChange={() => setReload((n) => n + 1)} />
-        <LiveAttendanceIndicators key={reload} />
-      </div>
+      <CheckInOutHero onChange={() => setReload((n) => n + 1)} />
+      <LiveAttendanceIndicators key={reload} />
       {canManage && <ManagerQuickActions onChange={() => setReload((n) => n + 1)} />}
     </div>
   );
