@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import MyAttendanceCard from '@/components/hr/MyAttendanceCard';
+import CheckInOutHero from '@/components/hr/CheckInOutHero';
 import LiveAttendanceIndicators from '@/components/hr/LiveAttendanceIndicators';
 import AttendanceSettingsCard from '@/components/hr/AttendanceSettingsCard';
 import {
@@ -133,10 +133,8 @@ function TodayTab({ canManage }: { canManage: boolean }) {
   const [reload, setReload] = useState(0);
   return (
     <div className="space-y-4">
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
-        <MyAttendanceCard onChange={() => setReload((n) => n + 1)} />
-        <LiveAttendanceIndicators key={reload} />
-      </div>
+      <CheckInOutHero onChange={() => setReload((n) => n + 1)} />
+      <LiveAttendanceIndicators key={reload} />
       {canManage && <ManagerQuickActions onChange={() => setReload((n) => n + 1)} />}
     </div>
   );
