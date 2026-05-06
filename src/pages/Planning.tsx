@@ -21,8 +21,10 @@ import { format, formatDistanceToNow, startOfWeek, endOfWeek, getISOWeek } from 
 import {
   Target, Plus, ThumbsUp, ThumbsDown, CheckCircle2, MessageCircle,
   ChevronDown, ChevronRight, Loader2, AlertTriangle, Trophy, TrendingUp,
-  Calendar as CalIcon, Clock, Flag, Pencil, Trash2,
+  Calendar as CalIcon, Clock, Flag, Pencil, Trash2, Paperclip,
 } from 'lucide-react';
+import { AttachmentUploader, AttachmentList } from '@/components/PlanAttachments';
+import { Switch } from '@/components/ui/switch';
 
 type PlanType = 'daily' | 'weekly' | 'monthly' | 'quarterly';
 type PlanStatus = 'open' | 'in_progress' | 'completed' | 'cancelled';
