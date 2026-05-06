@@ -543,6 +543,20 @@ function PlanFormDialog({
             <Label>Due date (optional)</Label>
             <Input type="date" value={form.due_date} onChange={(e) => setForm({ ...form, due_date: e.target.value })} />
           </div>
+          <div className="rounded-md border p-3 space-y-2">
+            <div className="flex items-center justify-between">
+              <Label className="text-sm">Attachments</Label>
+              <div className="flex items-center gap-2 text-xs">
+                <span className="text-muted-foreground">Required</span>
+                <Switch checked={form.require_attachment} onCheckedChange={(v) => setForm({ ...form, require_attachment: v })} />
+              </div>
+            </div>
+            <AttachmentUploader
+              value={form.attachment_urls}
+              onChange={(paths) => setForm({ ...form, attachment_urls: paths })}
+              required={form.require_attachment}
+            />
+          </div>
         </div>
         <DialogFooter>
           <Button variant="ghost" onClick={onClose}>Cancel</Button>
