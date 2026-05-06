@@ -136,13 +136,11 @@ function SummaryStrip() {
 }
 
 // ====================== TODAY ======================
-function TodayTab({ canManage }: { canManage: boolean }) {
-  const [reload, setReload] = useState(0);
+function TodayTab({ canManage, reloadKey, onChange }: { canManage: boolean; reloadKey: number; onChange: () => void }) {
   return (
     <div className="space-y-4">
-      <CheckInOutHero onChange={() => setReload((n) => n + 1)} />
-      <LiveAttendanceIndicators key={reload} />
-      {canManage && <ManagerQuickActions onChange={() => setReload((n) => n + 1)} />}
+      <LiveAttendanceIndicators key={reloadKey} />
+      {canManage && <ManagerQuickActions onChange={onChange} />}
     </div>
   );
 }
