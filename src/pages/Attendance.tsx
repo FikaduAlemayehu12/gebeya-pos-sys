@@ -35,6 +35,8 @@ export default function Attendance() {
   const isManager = hasRole('manager');
   const canManage = isHrStaff || isManager;
 
+  const [heroReload, setHeroReload] = useState(0);
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -53,10 +55,15 @@ export default function Attendance() {
         </div>
       </div>
 
+      {/* Persistent real-time Check In / Check Out — sticky across tabs and scroll */}
+      <div className="sticky top-0 z-30 -mx-4 px-4 py-2 bg-background/85 backdrop-blur-md border-b border-border/50">
+        <CheckInOutHero onChange={() => setHeroReload((n) => n + 1)} />
+      </div>
+
       <SummaryStrip />
 
       <Tabs value={tab} onValueChange={(t) => setTab(t as Tab)}>
-        <TabsList className="flex-wrap h-auto">
+        <TabsList className="flex-wrap h-auto sticky top-[260px] z-20 bg-background/85 backdrop-blur">
           <TabsTrigger value="today"><Clock className="w-3.5 h-3.5 mr-1.5" /> Today</TabsTrigger>
           <TabsTrigger value="records"><CalendarDays className="w-3.5 h-3.5 mr-1.5" /> Daily Records</TabsTrigger>
           <TabsTrigger value="history"><History className="w-3.5 h-3.5 mr-1.5" /> My History</TabsTrigger>
@@ -64,7 +71,7 @@ export default function Attendance() {
           {canManage && <TabsTrigger value="settings"><Settings className="w-3.5 h-3.5 mr-1.5" /> Settings</TabsTrigger>}
         </TabsList>
 
-        <TabsContent value="today"><TodayTab canManage={canManage} /></TabsContent>
+        <TabsContent value="today"><TodayTab canManage={canManage} reloadKey={heroReload} onChange={() => setHeroReload((n) => n + 1)} /></TabsContent>
         <TabsContent value="records"><RecordsTab canManage={canManage} /></TabsContent>
         <TabsContent value="history"><MyHistoryTab /></TabsContent>
         <TabsContent value="leave"><LeaveTab canApprove={canManage} /></TabsContent>
