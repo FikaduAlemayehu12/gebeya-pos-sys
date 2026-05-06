@@ -268,6 +268,13 @@ export default function Planning() {
                     <CardContent className="space-y-3 pt-0">
                       <p className="text-sm whitespace-pre-wrap text-foreground/90">{p.content}</p>
 
+                      {(p.attachment_urls || []).length > 0 && (
+                        <div className="flex items-start gap-2">
+                          <Paperclip className="w-3.5 h-3.5 mt-1 text-muted-foreground shrink-0" />
+                          <AttachmentList paths={p.attachment_urls || []} readOnly />
+                        </div>
+                      )}
+
                       {perf && (
                         <div className="rounded-md border bg-muted/40 p-2.5">
                           <div className="flex items-center justify-between text-xs mb-1.5">
