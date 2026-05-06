@@ -435,12 +435,18 @@ function PlanFormDialog({
     plan_type: (plan?.plan_type as PlanType) || 'daily',
     status: (plan?.status as PlanStatus) || 'open',
     due_date: plan?.due_date || '',
+    attachment_urls: (plan?.attachment_urls as string[]) || [],
+    require_attachment: false,
   });
   const [busy, setBusy] = useState(false);
 
   const save = async () => {
     if (!form.title.trim() || !form.content.trim()) {
       toast({ title: 'Title and content are required', variant: 'destructive' });
+      return;
+    }
+    if (form.require_attachment && form.attachment_urls.length === 0) {
+      toast({ title: 'Attachment required', description: 'Please attach at least one file.', variant: 'destructive' });
       return;
     }
     if (!user) return;
@@ -451,6 +457,7 @@ function PlanFormDialog({
       plan_type: form.plan_type,
       status: form.status,
       due_date: form.due_date || null,
+      attachment_urls: form.attachment_urls,
     };
 
     if (plan) {
