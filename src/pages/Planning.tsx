@@ -21,8 +21,10 @@ import { format, formatDistanceToNow, startOfWeek, endOfWeek, getISOWeek } from 
 import {
   Target, Plus, ThumbsUp, ThumbsDown, CheckCircle2, MessageCircle,
   ChevronDown, ChevronRight, Loader2, AlertTriangle, Trophy, TrendingUp,
-  Calendar as CalIcon, Clock, Flag, Pencil, Trash2,
+  Calendar as CalIcon, Clock, Flag, Pencil, Trash2, Paperclip,
 } from 'lucide-react';
+import { AttachmentUploader, AttachmentList } from '@/components/PlanAttachments';
+import { Switch } from '@/components/ui/switch';
 
 type PlanType = 'daily' | 'weekly' | 'monthly' | 'quarterly';
 type PlanStatus = 'open' | 'in_progress' | 'completed' | 'cancelled';
@@ -266,6 +268,13 @@ export default function Planning() {
                     <CardContent className="space-y-3 pt-0">
                       <p className="text-sm whitespace-pre-wrap text-foreground/90">{p.content}</p>
 
+                      {(p.attachment_urls || []).length > 0 && (
+                        <div className="flex items-start gap-2">
+                          <Paperclip className="w-3.5 h-3.5 mt-1 text-muted-foreground shrink-0" />
+                          <AttachmentList paths={p.attachment_urls || []} readOnly />
+                        </div>
+                      )}
+
                       {perf && (
                         <div className="rounded-md border bg-muted/40 p-2.5">
                           <div className="flex items-center justify-between text-xs mb-1.5">
@@ -426,12 +435,18 @@ function PlanFormDialog({
     plan_type: (plan?.plan_type as PlanType) || 'daily',
     status: (plan?.status as PlanStatus) || 'open',
     due_date: plan?.due_date || '',
+    attachment_urls: (plan?.attachment_urls as string[]) || [],
+    require_attachment: false,
   });
   const [busy, setBusy] = useState(false);
 
   const save = async () => {
     if (!form.title.trim() || !form.content.trim()) {
       toast({ title: 'Title and content are required', variant: 'destructive' });
+      return;
+    }
+    if (form.require_attachment && form.attachment_urls.length === 0) {
+      toast({ title: 'Attachment required', description: 'Please attach at least one file.', variant: 'destructive' });
       return;
     }
     if (!user) return;
@@ -442,6 +457,7 @@ function PlanFormDialog({
       plan_type: form.plan_type,
       status: form.status,
       due_date: form.due_date || null,
+      attachment_urls: form.attachment_urls,
     };
 
     if (plan) {
@@ -526,6 +542,20 @@ function PlanFormDialog({
           <div>
             <Label>Due date (optional)</Label>
             <Input type="date" value={form.due_date} onChange={(e) => setForm({ ...form, due_date: e.target.value })} />
+          </div>
+          <div className="rounded-md border p-3 space-y-2">
+            <div className="flex items-center justify-between">
+              <Label className="text-sm">Attachments</Label>
+              <div className="flex items-center gap-2 text-xs">
+                <span className="text-muted-foreground">Required</span>
+                <Switch checked={form.require_attachment} onCheckedChange={(v) => setForm({ ...form, require_attachment: v })} />
+              </div>
+            </div>
+            <AttachmentUploader
+              value={form.attachment_urls}
+              onChange={(paths) => setForm({ ...form, attachment_urls: paths })}
+              required={form.require_attachment}
+            />
           </div>
         </div>
         <DialogFooter>

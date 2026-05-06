@@ -481,6 +481,108 @@ export type Database = {
           },
         ]
       }
+      bank_accounts: {
+        Row: {
+          account_number: string
+          account_type: string
+          bank_name: string
+          branch_id: string | null
+          created_at: string
+          currency: string
+          current_balance: number
+          gl_account_code: string | null
+          id: string
+          is_active: boolean
+          name: string
+          tenant_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          account_number?: string
+          account_type?: string
+          bank_name?: string
+          branch_id?: string | null
+          created_at?: string
+          currency?: string
+          current_balance?: number
+          gl_account_code?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          account_number?: string
+          account_type?: string
+          bank_name?: string
+          branch_id?: string | null
+          created_at?: string
+          currency?: string
+          current_balance?: number
+          gl_account_code?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      bank_statement_lines: {
+        Row: {
+          balance: number | null
+          bank_account_id: string
+          credit: number
+          debit: number
+          description: string
+          id: string
+          imported_at: string
+          matched_journal_id: string | null
+          matched_payment_id: string | null
+          reconciled: boolean
+          reconciled_at: string | null
+          reconciled_by: string | null
+          reference: string | null
+          tenant_id: string | null
+          txn_date: string
+        }
+        Insert: {
+          balance?: number | null
+          bank_account_id: string
+          credit?: number
+          debit?: number
+          description?: string
+          id?: string
+          imported_at?: string
+          matched_journal_id?: string | null
+          matched_payment_id?: string | null
+          reconciled?: boolean
+          reconciled_at?: string | null
+          reconciled_by?: string | null
+          reference?: string | null
+          tenant_id?: string | null
+          txn_date: string
+        }
+        Update: {
+          balance?: number | null
+          bank_account_id?: string
+          credit?: number
+          debit?: number
+          description?: string
+          id?: string
+          imported_at?: string
+          matched_journal_id?: string | null
+          matched_payment_id?: string | null
+          reconciled?: boolean
+          reconciled_at?: string | null
+          reconciled_by?: string | null
+          reference?: string | null
+          tenant_id?: string | null
+          txn_date?: string
+        }
+        Relationships: []
+      }
       branches: {
         Row: {
           address: string | null
@@ -530,6 +632,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      budgets: {
+        Row: {
+          account_code: string | null
+          account_id: string | null
+          branch_id: string | null
+          created_at: string
+          fiscal_year: number
+          id: string
+          monthly_amounts: number[]
+          notes: string | null
+          tenant_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          account_code?: string | null
+          account_id?: string | null
+          branch_id?: string | null
+          created_at?: string
+          fiscal_year: number
+          id?: string
+          monthly_amounts?: number[]
+          notes?: string | null
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          account_code?: string | null
+          account_id?: string | null
+          branch_id?: string | null
+          created_at?: string
+          fiscal_year?: number
+          id?: string
+          monthly_amounts?: number[]
+          notes?: string | null
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       category_field_schemas: {
         Row: {
@@ -1120,6 +1261,39 @@ export type Database = {
           },
         ]
       }
+      finance_settings: {
+        Row: {
+          base_currency: string
+          fiscal_year_start_month: number
+          id: string
+          tenant_id: string | null
+          updated_at: string
+          vat_rate: number
+          withholding_rate: number
+          withholding_threshold: number
+        }
+        Insert: {
+          base_currency?: string
+          fiscal_year_start_month?: number
+          id?: string
+          tenant_id?: string | null
+          updated_at?: string
+          vat_rate?: number
+          withholding_rate?: number
+          withholding_threshold?: number
+        }
+        Update: {
+          base_currency?: string
+          fiscal_year_start_month?: number
+          id?: string
+          tenant_id?: string | null
+          updated_at?: string
+          vat_rate?: number
+          withholding_rate?: number
+          withholding_threshold?: number
+        }
+        Relationships: []
+      }
       goods_receipts: {
         Row: {
           branch_id: string | null
@@ -1630,6 +1804,87 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      payment_approval_rules: {
+        Row: {
+          approver_user_id: string | null
+          branch_id: string | null
+          created_at: string
+          id: string
+          is_active: boolean
+          max_amount: number | null
+          min_amount: number
+          notes: string | null
+          required_role: string
+          step_order: number
+          tenant_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          approver_user_id?: string | null
+          branch_id?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          max_amount?: number | null
+          min_amount?: number
+          notes?: string | null
+          required_role?: string
+          step_order?: number
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          approver_user_id?: string | null
+          branch_id?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          max_amount?: number | null
+          min_amount?: number
+          notes?: string | null
+          required_role?: string
+          step_order?: number
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      payment_approvals: {
+        Row: {
+          approver_id: string | null
+          comment: string | null
+          created_at: string
+          decided_at: string | null
+          decision: string
+          id: string
+          payment_request_id: string
+          step_order: number
+          tenant_id: string | null
+        }
+        Insert: {
+          approver_id?: string | null
+          comment?: string | null
+          created_at?: string
+          decided_at?: string | null
+          decision?: string
+          id?: string
+          payment_request_id: string
+          step_order?: number
+          tenant_id?: string | null
+        }
+        Update: {
+          approver_id?: string | null
+          comment?: string | null
+          created_at?: string
+          decided_at?: string | null
+          decision?: string
+          id?: string
+          payment_request_id?: string
+          step_order?: number
+          tenant_id?: string | null
+        }
+        Relationships: []
       }
       payment_requests: {
         Row: {
