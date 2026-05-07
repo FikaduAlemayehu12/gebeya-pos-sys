@@ -535,11 +535,15 @@ function BankTab({ canApprove }: { canApprove: boolean }) {
             </div>
             {canApprove && (
               <div>
-                <input ref={fileRef} type="file" accept=".csv,text/csv" className="hidden"
-                  onChange={(e) => e.target.files?.[0] && importCsv(e.target.files[0])} />
-                <Button size="sm" variant="outline" onClick={() => fileRef.current?.click()}>
+                <Button size="sm" variant="outline" onClick={() => setImportOpen(true)}>
                   <Upload className="w-3.5 h-3.5 mr-1" /> Import CSV
                 </Button>
+                <BankCsvImportDialog
+                  open={importOpen}
+                  onOpenChange={setImportOpen}
+                  bankAccountId={selected}
+                  onImported={() => loadLines(selected)}
+                />
               </div>
             )}
           </CardHeader>
