@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
+import BankCsvImportDialog from '@/components/finance/BankCsvImportDialog';
 
 const fmt = (n: number, cur = 'ETB') =>
   `${cur} ${Number(n || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}`;
@@ -382,6 +383,7 @@ function BankTab({ canApprove }: { canApprove: boolean }) {
   const [selected, setSelected] = useState<string>('');
   const [acctOpen, setAcctOpen] = useState(false);
   const [acctForm, setAcctForm] = useState({ name: '', bank_name: '', account_number: '', account_type: 'bank', currency: 'ETB', gl_account_code: '1030' });
+  const [importOpen, setImportOpen] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const load = async () => {
@@ -533,11 +535,15 @@ function BankTab({ canApprove }: { canApprove: boolean }) {
             </div>
             {canApprove && (
               <div>
-                <input ref={fileRef} type="file" accept=".csv,text/csv" className="hidden"
-                  onChange={(e) => e.target.files?.[0] && importCsv(e.target.files[0])} />
-                <Button size="sm" variant="outline" onClick={() => fileRef.current?.click()}>
+                <Button size="sm" variant="outline" onClick={() => setImportOpen(true)}>
                   <Upload className="w-3.5 h-3.5 mr-1" /> Import CSV
                 </Button>
+                <BankCsvImportDialog
+                  open={importOpen}
+                  onOpenChange={setImportOpen}
+                  bankAccountId={selected}
+                  onImported={() => loadLines(selected)}
+                />
               </div>
             )}
           </CardHeader>
