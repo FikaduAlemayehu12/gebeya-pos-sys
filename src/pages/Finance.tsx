@@ -383,6 +383,7 @@ function BankTab({ canApprove }: { canApprove: boolean }) {
   const [selected, setSelected] = useState<string>('');
   const [acctOpen, setAcctOpen] = useState(false);
   const [acctForm, setAcctForm] = useState({ name: '', bank_name: '', account_number: '', account_type: 'bank', currency: 'ETB', gl_account_code: '1030' });
+  const [importOpen, setImportOpen] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const load = async () => {
