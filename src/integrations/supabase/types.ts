@@ -583,17 +583,177 @@ export type Database = {
         }
         Relationships: []
       }
+      branch_cash_positions: {
+        Row: {
+          bank_balance: number
+          branch_id: string
+          cash_balance: number
+          created_at: string
+          expected_deposit: number
+          id: string
+          notes: string | null
+          overage: number
+          petty_cash: number
+          recorded_by: string | null
+          shortage: number
+          snapshot_date: string
+          tenant_id: string | null
+        }
+        Insert: {
+          bank_balance?: number
+          branch_id: string
+          cash_balance?: number
+          created_at?: string
+          expected_deposit?: number
+          id?: string
+          notes?: string | null
+          overage?: number
+          petty_cash?: number
+          recorded_by?: string | null
+          shortage?: number
+          snapshot_date?: string
+          tenant_id?: string | null
+        }
+        Update: {
+          bank_balance?: number
+          branch_id?: string
+          cash_balance?: number
+          created_at?: string
+          expected_deposit?: number
+          id?: string
+          notes?: string | null
+          overage?: number
+          petty_cash?: number
+          recorded_by?: string | null
+          shortage?: number
+          snapshot_date?: string
+          tenant_id?: string | null
+        }
+        Relationships: []
+      }
+      branch_resource_transfers: {
+        Row: {
+          amount: number | null
+          approved_at: string | null
+          approved_by: string | null
+          asset_id: string | null
+          created_at: string
+          created_by: string | null
+          destination_branch_id: string
+          employee_id: string | null
+          id: string
+          reason: string | null
+          received_at: string | null
+          resource_type: string
+          source_branch_id: string
+          status: string
+          tenant_id: string | null
+          transfer_code: string
+          updated_at: string
+        }
+        Insert: {
+          amount?: number | null
+          approved_at?: string | null
+          approved_by?: string | null
+          asset_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          destination_branch_id: string
+          employee_id?: string | null
+          id?: string
+          reason?: string | null
+          received_at?: string | null
+          resource_type: string
+          source_branch_id: string
+          status?: string
+          tenant_id?: string | null
+          transfer_code: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number | null
+          approved_at?: string | null
+          approved_by?: string | null
+          asset_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          destination_branch_id?: string
+          employee_id?: string | null
+          id?: string
+          reason?: string | null
+          received_at?: string | null
+          resource_type?: string
+          source_branch_id?: string
+          status?: string
+          tenant_id?: string | null
+          transfer_code?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      branch_targets: {
+        Row: {
+          branch_id: string
+          collections_target: number
+          created_at: string
+          customer_target: number
+          expense_cap: number
+          id: string
+          notes: string | null
+          period_month: number
+          period_year: number
+          profit_target: number
+          sales_target: number
+          tenant_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          branch_id: string
+          collections_target?: number
+          created_at?: string
+          customer_target?: number
+          expense_cap?: number
+          id?: string
+          notes?: string | null
+          period_month: number
+          period_year: number
+          profit_target?: number
+          sales_target?: number
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          branch_id?: string
+          collections_target?: number
+          created_at?: string
+          customer_target?: number
+          expense_cap?: number
+          id?: string
+          notes?: string | null
+          period_month?: number
+          period_year?: number
+          profit_target?: number
+          sales_target?: number
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       branches: {
         Row: {
           address: string | null
           city: string | null
           code: string
           created_at: string
+          gps_lat: number | null
+          gps_lng: number | null
           id: string
           is_active: boolean
           manager_user_id: string | null
           name: string
+          opening_hours: string | null
           phone: string | null
+          region: string | null
           tenant_id: string | null
           updated_at: string
         }
@@ -602,11 +762,15 @@ export type Database = {
           city?: string | null
           code: string
           created_at?: string
+          gps_lat?: number | null
+          gps_lng?: number | null
           id?: string
           is_active?: boolean
           manager_user_id?: string | null
           name: string
+          opening_hours?: string | null
           phone?: string | null
+          region?: string | null
           tenant_id?: string | null
           updated_at?: string
         }
@@ -615,11 +779,15 @@ export type Database = {
           city?: string | null
           code?: string
           created_at?: string
+          gps_lat?: number | null
+          gps_lng?: number | null
           id?: string
           is_active?: boolean
           manager_user_id?: string | null
           name?: string
+          opening_hours?: string | null
           phone?: string | null
+          region?: string | null
           tenant_id?: string | null
           updated_at?: string
         }
@@ -2899,6 +3067,255 @@ export type Database = {
           },
         ]
       }
+      purchase_request_items: {
+        Row: {
+          created_at: string
+          description: string
+          estimated_price: number
+          id: string
+          pr_id: string
+          product_id: string | null
+          quantity: number
+          tenant_id: string | null
+          unit: string | null
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          estimated_price?: number
+          id?: string
+          pr_id: string
+          product_id?: string | null
+          quantity?: number
+          tenant_id?: string | null
+          unit?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          estimated_price?: number
+          id?: string
+          pr_id?: string
+          product_id?: string | null
+          quantity?: number
+          tenant_id?: string | null
+          unit?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "purchase_request_items_pr_id_fkey"
+            columns: ["pr_id"]
+            isOneToOne: false
+            referencedRelation: "purchase_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      purchase_requests: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          branch_id: string | null
+          budget_code: string | null
+          created_at: string
+          currency: string
+          department: string | null
+          estimated_total: number
+          id: string
+          justification: string | null
+          notes: string | null
+          pr_number: string
+          preferred_supplier_id: string | null
+          rejection_reason: string | null
+          requester_id: string | null
+          required_date: string | null
+          status: string
+          tenant_id: string | null
+          updated_at: string
+          urgency: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          branch_id?: string | null
+          budget_code?: string | null
+          created_at?: string
+          currency?: string
+          department?: string | null
+          estimated_total?: number
+          id?: string
+          justification?: string | null
+          notes?: string | null
+          pr_number: string
+          preferred_supplier_id?: string | null
+          rejection_reason?: string | null
+          requester_id?: string | null
+          required_date?: string | null
+          status?: string
+          tenant_id?: string | null
+          updated_at?: string
+          urgency?: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          branch_id?: string | null
+          budget_code?: string | null
+          created_at?: string
+          currency?: string
+          department?: string | null
+          estimated_total?: number
+          id?: string
+          justification?: string | null
+          notes?: string | null
+          pr_number?: string
+          preferred_supplier_id?: string | null
+          rejection_reason?: string | null
+          requester_id?: string | null
+          required_date?: string | null
+          status?: string
+          tenant_id?: string | null
+          updated_at?: string
+          urgency?: string
+        }
+        Relationships: []
+      }
+      quotations: {
+        Row: {
+          created_at: string
+          delivery_days: number | null
+          id: string
+          is_winner: boolean
+          notes: string | null
+          payment_terms: string | null
+          rfq_id: string
+          score: number
+          submitted_at: string
+          supplier_id: string
+          tenant_id: string | null
+          total_price: number
+          warranty: string | null
+        }
+        Insert: {
+          created_at?: string
+          delivery_days?: number | null
+          id?: string
+          is_winner?: boolean
+          notes?: string | null
+          payment_terms?: string | null
+          rfq_id: string
+          score?: number
+          submitted_at?: string
+          supplier_id: string
+          tenant_id?: string | null
+          total_price?: number
+          warranty?: string | null
+        }
+        Update: {
+          created_at?: string
+          delivery_days?: number | null
+          id?: string
+          is_winner?: boolean
+          notes?: string | null
+          payment_terms?: string | null
+          rfq_id?: string
+          score?: number
+          submitted_at?: string
+          supplier_id?: string
+          tenant_id?: string | null
+          total_price?: number
+          warranty?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quotations_rfq_id_fkey"
+            columns: ["rfq_id"]
+            isOneToOne: false
+            referencedRelation: "rfqs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rfq_items: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          quantity: number
+          rfq_id: string
+          tenant_id: string | null
+          unit: string | null
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          id?: string
+          quantity?: number
+          rfq_id: string
+          tenant_id?: string | null
+          unit?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          quantity?: number
+          rfq_id?: string
+          tenant_id?: string | null
+          unit?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rfq_items_rfq_id_fkey"
+            columns: ["rfq_id"]
+            isOneToOne: false
+            referencedRelation: "rfqs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rfqs: {
+        Row: {
+          closing_date: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          pr_id: string | null
+          rfq_number: string
+          status: string
+          tenant_id: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          closing_date?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          pr_id?: string | null
+          rfq_number: string
+          status?: string
+          tenant_id?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          closing_date?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          pr_id?: string | null
+          rfq_number?: string
+          status?: string
+          tenant_id?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       sale_items: {
         Row: {
           created_at: string
@@ -3247,9 +3664,175 @@ export type Database = {
           },
         ]
       }
+      supplier_contracts: {
+        Row: {
+          contract_number: string
+          contract_value: number
+          created_at: string
+          currency: string
+          document_url: string | null
+          end_date: string
+          id: string
+          start_date: string
+          status: string
+          supplier_id: string
+          tenant_id: string | null
+          terms: string | null
+          title: string
+          updated_at: string
+          used_value: number
+        }
+        Insert: {
+          contract_number: string
+          contract_value?: number
+          created_at?: string
+          currency?: string
+          document_url?: string | null
+          end_date: string
+          id?: string
+          start_date: string
+          status?: string
+          supplier_id: string
+          tenant_id?: string | null
+          terms?: string | null
+          title: string
+          updated_at?: string
+          used_value?: number
+        }
+        Update: {
+          contract_number?: string
+          contract_value?: number
+          created_at?: string
+          currency?: string
+          document_url?: string | null
+          end_date?: string
+          id?: string
+          start_date?: string
+          status?: string
+          supplier_id?: string
+          tenant_id?: string | null
+          terms?: string | null
+          title?: string
+          updated_at?: string
+          used_value?: number
+        }
+        Relationships: []
+      }
+      supplier_documents: {
+        Row: {
+          created_at: string
+          doc_number: string | null
+          doc_type: string
+          document_url: string | null
+          expiry_date: string | null
+          id: string
+          issued_date: string | null
+          notes: string | null
+          supplier_id: string
+          tenant_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          doc_number?: string | null
+          doc_type: string
+          document_url?: string | null
+          expiry_date?: string | null
+          id?: string
+          issued_date?: string | null
+          notes?: string | null
+          supplier_id: string
+          tenant_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          doc_number?: string | null
+          doc_type?: string
+          document_url?: string | null
+          expiry_date?: string | null
+          id?: string
+          issued_date?: string | null
+          notes?: string | null
+          supplier_id?: string
+          tenant_id?: string | null
+        }
+        Relationships: []
+      }
+      supplier_invoices: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          created_by: string | null
+          currency: string
+          document_url: string | null
+          due_date: string | null
+          grn_id: string | null
+          id: string
+          invoice_date: string
+          invoice_number: string
+          match_notes: string | null
+          match_status: string
+          po_id: string | null
+          status: string
+          subtotal: number
+          supplier_id: string
+          tenant_id: string | null
+          total: number
+          updated_at: string
+          vat: number
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          document_url?: string | null
+          due_date?: string | null
+          grn_id?: string | null
+          id?: string
+          invoice_date?: string
+          invoice_number: string
+          match_notes?: string | null
+          match_status?: string
+          po_id?: string | null
+          status?: string
+          subtotal?: number
+          supplier_id: string
+          tenant_id?: string | null
+          total?: number
+          updated_at?: string
+          vat?: number
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          document_url?: string | null
+          due_date?: string | null
+          grn_id?: string | null
+          id?: string
+          invoice_date?: string
+          invoice_number?: string
+          match_notes?: string | null
+          match_status?: string
+          po_id?: string | null
+          status?: string
+          subtotal?: number
+          supplier_id?: string
+          tenant_id?: string | null
+          total?: number
+          updated_at?: string
+          vat?: number
+        }
+        Relationships: []
+      }
       suppliers: {
         Row: {
           address: string | null
+          bank_details: Json | null
           category: string | null
           city: string | null
           code: string
@@ -3258,20 +3841,27 @@ export type Database = {
           email: string | null
           id: string
           is_active: boolean
+          lead_time_days: number | null
           license_expiry: string | null
           name: string
           notes: string | null
+          on_time_delivery_rate: number
           payment_terms: string | null
+          performance_score: number
           phone: string | null
+          quality_score: number
           rating: number
           tenant_id: string | null
+          tin: string | null
           tin_number: string | null
           total_orders: number
           total_spend: number
           updated_at: string
+          vat_number: string | null
         }
         Insert: {
           address?: string | null
+          bank_details?: Json | null
           category?: string | null
           city?: string | null
           code: string
@@ -3280,20 +3870,27 @@ export type Database = {
           email?: string | null
           id?: string
           is_active?: boolean
+          lead_time_days?: number | null
           license_expiry?: string | null
           name: string
           notes?: string | null
+          on_time_delivery_rate?: number
           payment_terms?: string | null
+          performance_score?: number
           phone?: string | null
+          quality_score?: number
           rating?: number
           tenant_id?: string | null
+          tin?: string | null
           tin_number?: string | null
           total_orders?: number
           total_spend?: number
           updated_at?: string
+          vat_number?: string | null
         }
         Update: {
           address?: string | null
+          bank_details?: Json | null
           category?: string | null
           city?: string | null
           code?: string
@@ -3302,17 +3899,23 @@ export type Database = {
           email?: string | null
           id?: string
           is_active?: boolean
+          lead_time_days?: number | null
           license_expiry?: string | null
           name?: string
           notes?: string | null
+          on_time_delivery_rate?: number
           payment_terms?: string | null
+          performance_score?: number
           phone?: string | null
+          quality_score?: number
           rating?: number
           tenant_id?: string | null
+          tin?: string | null
           tin_number?: string | null
           total_orders?: number
           total_spend?: number
           updated_at?: string
+          vat_number?: string | null
         }
         Relationships: [
           {
@@ -3323,6 +3926,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      tender_bookmarks: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          deadline: string | null
+          id: string
+          notes: string | null
+          source: string | null
+          status: string
+          tenant_id: string | null
+          title: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          deadline?: string | null
+          id?: string
+          notes?: string | null
+          source?: string | null
+          status?: string
+          tenant_id?: string | null
+          title: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          deadline?: string | null
+          id?: string
+          notes?: string | null
+          source?: string | null
+          status?: string
+          tenant_id?: string | null
+          title?: string
+          url?: string
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {
