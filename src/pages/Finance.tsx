@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
+import BankCsvImportDialog from '@/components/finance/BankCsvImportDialog';
 
 const fmt = (n: number, cur = 'ETB') =>
   `${cur} ${Number(n || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}`;
