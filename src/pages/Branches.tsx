@@ -15,7 +15,25 @@ import StatCard from '@/components/StatCard';
 import { Building2, Plus, MapPin, Phone, TrendingUp, Wallet, ArrowLeftRight, Target, Users, Banknote } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-type Branch = { id: string; name: string; code: string; address: string; city: string; phone: string; is_active: boolean; region?: string };
+type Branch = {
+  id: string; name: string; code: string; address: string; city: string; phone: string; is_active: boolean; region?: string;
+  tin_number?: string; vat_number?: string; business_license?: string;
+  default_bank_account_id?: string | null; gl_cost_center?: string; profit_center?: string;
+  default_warehouse?: string; stock_location?: string;
+  timezone?: string; currency?: string;
+  doc_prefix_invoice?: string; doc_prefix_po?: string; doc_prefix_receipt?: string;
+  manager_user_id?: string | null;
+};
+
+const EMPTY_BRANCH = {
+  name:'', code:'', address:'', city:'', phone:'', region:'',
+  tin_number:'', vat_number:'', business_license:'',
+  default_bank_account_id:'', gl_cost_center:'', profit_center:'',
+  default_warehouse:'', stock_location:'',
+  timezone:'Africa/Addis_Ababa', currency:'ETB',
+  doc_prefix_invoice:'INV', doc_prefix_po:'PO', doc_prefix_receipt:'RCT',
+  manager_user_id:'',
+};
 
 const fmt = (n: number) => `ETB ${Number(n||0).toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
 
