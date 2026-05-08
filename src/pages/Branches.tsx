@@ -71,7 +71,8 @@ function DirectoryTab() {
   const { toast } = useToast();
   const [branches, setBranches] = useState<Branch[]>([]);
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({ name:'', code:'', address:'', city:'', phone:'', region:'' });
+  const [editId, setEditId] = useState<string | null>(null);
+  const [form, setForm] = useState<typeof EMPTY_BRANCH>(EMPTY_BRANCH);
 
   const [bankAccounts, setBankAccounts] = useState<any[]>([]);
   const [managers, setManagers] = useState<any[]>([]);
