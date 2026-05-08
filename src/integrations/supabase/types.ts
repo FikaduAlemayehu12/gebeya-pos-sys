@@ -742,9 +742,17 @@ export type Database = {
       branches: {
         Row: {
           address: string | null
+          business_license: string | null
           city: string | null
           code: string
           created_at: string
+          currency: string | null
+          default_bank_account_id: string | null
+          default_warehouse: string | null
+          doc_prefix_invoice: string | null
+          doc_prefix_po: string | null
+          doc_prefix_receipt: string | null
+          gl_cost_center: string | null
           gps_lat: number | null
           gps_lng: number | null
           id: string
@@ -753,15 +761,28 @@ export type Database = {
           name: string
           opening_hours: string | null
           phone: string | null
+          profit_center: string | null
           region: string | null
+          stock_location: string | null
           tenant_id: string | null
+          timezone: string | null
+          tin_number: string | null
           updated_at: string
+          vat_number: string | null
         }
         Insert: {
           address?: string | null
+          business_license?: string | null
           city?: string | null
           code: string
           created_at?: string
+          currency?: string | null
+          default_bank_account_id?: string | null
+          default_warehouse?: string | null
+          doc_prefix_invoice?: string | null
+          doc_prefix_po?: string | null
+          doc_prefix_receipt?: string | null
+          gl_cost_center?: string | null
           gps_lat?: number | null
           gps_lng?: number | null
           id?: string
@@ -770,15 +791,28 @@ export type Database = {
           name: string
           opening_hours?: string | null
           phone?: string | null
+          profit_center?: string | null
           region?: string | null
+          stock_location?: string | null
           tenant_id?: string | null
+          timezone?: string | null
+          tin_number?: string | null
           updated_at?: string
+          vat_number?: string | null
         }
         Update: {
           address?: string | null
+          business_license?: string | null
           city?: string | null
           code?: string
           created_at?: string
+          currency?: string | null
+          default_bank_account_id?: string | null
+          default_warehouse?: string | null
+          doc_prefix_invoice?: string | null
+          doc_prefix_po?: string | null
+          doc_prefix_receipt?: string | null
+          gl_cost_center?: string | null
           gps_lat?: number | null
           gps_lng?: number | null
           id?: string
@@ -787,9 +821,14 @@ export type Database = {
           name?: string
           opening_hours?: string | null
           phone?: string | null
+          profit_center?: string | null
           region?: string | null
+          stock_location?: string | null
           tenant_id?: string | null
+          timezone?: string | null
+          tin_number?: string | null
           updated_at?: string
+          vat_number?: string | null
         }
         Relationships: [
           {
