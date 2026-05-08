@@ -15,7 +15,25 @@ import StatCard from '@/components/StatCard';
 import { Building2, Plus, MapPin, Phone, TrendingUp, Wallet, ArrowLeftRight, Target, Users, Banknote } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-type Branch = { id: string; name: string; code: string; address: string; city: string; phone: string; is_active: boolean; region?: string };
+type Branch = {
+  id: string; name: string; code: string; address: string; city: string; phone: string; is_active: boolean; region?: string;
+  tin_number?: string; vat_number?: string; business_license?: string;
+  default_bank_account_id?: string | null; gl_cost_center?: string; profit_center?: string;
+  default_warehouse?: string; stock_location?: string;
+  timezone?: string; currency?: string;
+  doc_prefix_invoice?: string; doc_prefix_po?: string; doc_prefix_receipt?: string;
+  manager_user_id?: string | null;
+};
+
+const EMPTY_BRANCH = {
+  name:'', code:'', address:'', city:'', phone:'', region:'',
+  tin_number:'', vat_number:'', business_license:'',
+  default_bank_account_id:'', gl_cost_center:'', profit_center:'',
+  default_warehouse:'', stock_location:'',
+  timezone:'Africa/Addis_Ababa', currency:'ETB',
+  doc_prefix_invoice:'INV', doc_prefix_po:'PO', doc_prefix_receipt:'RCT',
+  manager_user_id:'',
+};
 
 const fmt = (n: number) => `ETB ${Number(n||0).toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
 
@@ -53,41 +71,114 @@ function DirectoryTab() {
   const { toast } = useToast();
   const [branches, setBranches] = useState<Branch[]>([]);
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({ name:'', code:'', address:'', city:'', phone:'', region:'' });
+  const [editId, setEditId] = useState<string | null>(null);
+  const [form, setForm] = useState<typeof EMPTY_BRANCH>(EMPTY_BRANCH);
+
+  const [bankAccounts, setBankAccounts] = useState<any[]>([]);
+  const [managers, setManagers] = useState<any[]>([]);
 
   const load = async () => {
-    const { data } = await supabase.from('branches').select('*').order('name');
-    setBranches((data as any) || []);
+    const [b, ba, mem] = await Promise.all([
+      supabase.from('branches').select('*').order('name'),
+      supabase.from('bank_accounts' as any).select('id,name,bank_name'),
+      supabase.from('company_members').select('user_id, profiles:user_id(full_name, email)' as any).limit(200),
+    ]);
+    setBranches((b.data as any) || []);
+    setBankAccounts((ba.data as any) || []);
+    setManagers((mem.data as any) || []);
   };
   useEffect(() => { load(); }, []);
 
-  const add = async () => {
+  const startEdit = (b: Branch) => {
+    setForm({ ...EMPTY_BRANCH, ...b, default_bank_account_id: b.default_bank_account_id || '', manager_user_id: b.manager_user_id || '' });
+    setEditId(b.id); setOpen(true);
+  };
+  const startNew = () => { setForm(EMPTY_BRANCH); setEditId(null); setOpen(true); };
+
+  const save = async () => {
     if (!form.name || !form.code) { toast({ title: 'Name and code required', variant: 'destructive' }); return; }
-    const { error } = await supabase.from('branches').insert(form as any);
+    const payload: any = { ...form };
+    if (!payload.default_bank_account_id) payload.default_bank_account_id = null;
+    if (!payload.manager_user_id) payload.manager_user_id = null;
+    const { error } = editId
+      ? await supabase.from('branches').update(payload).eq('id', editId)
+      : await supabase.from('branches').insert(payload);
     if (error) { toast({ title: 'Error', description: error.message, variant: 'destructive' }); return; }
-    toast({ title: 'Branch created' }); setOpen(false); setForm({ name:'', code:'', address:'', city:'', phone:'', region:'' }); load();
+    toast({ title: editId ? 'Branch updated' : 'Branch created' });
+    setOpen(false); setForm(EMPTY_BRANCH); setEditId(null); load();
   };
 
   return (
     <div className="space-y-4">
       <div className="flex items-start justify-end">
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild><Button><Plus className="w-4 h-4 mr-1" /> New Branch</Button></DialogTrigger>
-          <DialogContent>
-            <DialogHeader><DialogTitle>Add Branch</DialogTitle></DialogHeader>
-            <div className="space-y-3">
-              <div className="grid grid-cols-2 gap-3">
-                <div><Label>Name</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
-                <div><Label>Code</Label><Input value={form.code} onChange={(e) => setForm({ ...form, code: e.target.value })} placeholder="BR-001" /></div>
-              </div>
-              <div><Label>Address</Label><Input value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} /></div>
-              <div className="grid grid-cols-3 gap-3">
-                <div><Label>City</Label><Input value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} /></div>
-                <div><Label>Region</Label><Input value={form.region} onChange={(e) => setForm({ ...form, region: e.target.value })} placeholder="Addis / North / South" /></div>
-                <div><Label>Phone</Label><Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></div>
-              </div>
-            </div>
-            <DialogFooter><Button onClick={add}>Create</Button></DialogFooter>
+        <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) { setEditId(null); setForm(EMPTY_BRANCH); } }}>
+          <DialogTrigger asChild><Button onClick={startNew}><Plus className="w-4 h-4 mr-1" /> New Branch</Button></DialogTrigger>
+          <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader><DialogTitle>{editId ? 'Edit Branch' : 'Add Branch'}</DialogTitle></DialogHeader>
+            <Tabs defaultValue="identity" className="space-y-3">
+              <TabsList className="flex-wrap h-auto">
+                <TabsTrigger value="identity">Identity</TabsTrigger>
+                <TabsTrigger value="legal">Legal</TabsTrigger>
+                <TabsTrigger value="finance">Finance</TabsTrigger>
+                <TabsTrigger value="inventory">Inventory</TabsTrigger>
+                <TabsTrigger value="operations">Operations</TabsTrigger>
+              </TabsList>
+              <TabsContent value="identity" className="space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <div><Label>Name *</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
+                  <div><Label>Code *</Label><Input value={form.code} onChange={(e) => setForm({ ...form, code: e.target.value })} placeholder="BR-001" /></div>
+                </div>
+                <div><Label>Address</Label><Input value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} /></div>
+                <div className="grid grid-cols-3 gap-3">
+                  <div><Label>City</Label><Input value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} /></div>
+                  <div><Label>Region</Label><Input value={form.region} onChange={(e) => setForm({ ...form, region: e.target.value })} placeholder="Addis / North / South" /></div>
+                  <div><Label>Phone</Label><Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></div>
+                </div>
+              </TabsContent>
+              <TabsContent value="legal" className="space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <div><Label>TIN</Label><Input value={form.tin_number} onChange={(e) => setForm({ ...form, tin_number: e.target.value })} placeholder="0012345678" /></div>
+                  <div><Label>VAT Reg. #</Label><Input value={form.vat_number} onChange={(e) => setForm({ ...form, vat_number: e.target.value })} /></div>
+                </div>
+                <div><Label>Business License #</Label><Input value={form.business_license} onChange={(e) => setForm({ ...form, business_license: e.target.value })} /></div>
+              </TabsContent>
+              <TabsContent value="finance" className="space-y-3">
+                <div><Label>Default Bank Account</Label>
+                  <Select value={form.default_bank_account_id || ''} onValueChange={(v) => setForm({ ...form, default_bank_account_id: v })}>
+                    <SelectTrigger><SelectValue placeholder="Pick bank account" /></SelectTrigger>
+                    <SelectContent>{bankAccounts.map(a => <SelectItem key={a.id} value={a.id}>{a.name} — {a.bank_name}</SelectItem>)}</SelectContent>
+                  </Select>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div><Label>GL / Cost Center</Label><Input value={form.gl_cost_center} onChange={(e) => setForm({ ...form, gl_cost_center: e.target.value })} placeholder="CC-101" /></div>
+                  <div><Label>Profit Center</Label><Input value={form.profit_center} onChange={(e) => setForm({ ...form, profit_center: e.target.value })} placeholder="PC-501" /></div>
+                </div>
+              </TabsContent>
+              <TabsContent value="inventory" className="space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <div><Label>Default Warehouse</Label><Input value={form.default_warehouse} onChange={(e) => setForm({ ...form, default_warehouse: e.target.value })} placeholder="WH-Main" /></div>
+                  <div><Label>Stock Location</Label><Input value={form.stock_location} onChange={(e) => setForm({ ...form, stock_location: e.target.value })} placeholder="Aisle A1" /></div>
+                </div>
+              </TabsContent>
+              <TabsContent value="operations" className="space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <div><Label>Timezone</Label><Input value={form.timezone} onChange={(e) => setForm({ ...form, timezone: e.target.value })} /></div>
+                  <div><Label>Currency</Label><Input value={form.currency} onChange={(e) => setForm({ ...form, currency: e.target.value })} /></div>
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                  <div><Label>Invoice Prefix</Label><Input value={form.doc_prefix_invoice} onChange={(e) => setForm({ ...form, doc_prefix_invoice: e.target.value })} /></div>
+                  <div><Label>PO Prefix</Label><Input value={form.doc_prefix_po} onChange={(e) => setForm({ ...form, doc_prefix_po: e.target.value })} /></div>
+                  <div><Label>Receipt Prefix</Label><Input value={form.doc_prefix_receipt} onChange={(e) => setForm({ ...form, doc_prefix_receipt: e.target.value })} /></div>
+                </div>
+                <div><Label>Branch Manager</Label>
+                  <Select value={form.manager_user_id || ''} onValueChange={(v) => setForm({ ...form, manager_user_id: v })}>
+                    <SelectTrigger><SelectValue placeholder="Pick manager" /></SelectTrigger>
+                    <SelectContent>{managers.map((m: any) => <SelectItem key={m.user_id} value={m.user_id}>{m.profiles?.full_name || m.profiles?.email || m.user_id.slice(0,8)}</SelectItem>)}</SelectContent>
+                  </Select>
+                </div>
+              </TabsContent>
+            </Tabs>
+            <DialogFooter><Button onClick={save}>{editId ? 'Update' : 'Create'}</Button></DialogFooter>
           </DialogContent>
         </Dialog>
       </div>
@@ -95,7 +186,7 @@ function DirectoryTab() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {branches.length === 0 && <Card className="md:col-span-2 lg:col-span-3"><CardContent className="py-12 text-center text-muted-foreground">No branches yet.</CardContent></Card>}
         {branches.map(b => (
-          <Card key={b.id} className="hover:shadow-md transition-shadow">
+          <Card key={b.id} className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => startEdit(b)}>
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between">
                 <div>
@@ -107,9 +198,12 @@ function DirectoryTab() {
                 </Badge>
               </div>
             </CardHeader>
-            <CardContent className="space-y-2 text-sm">
+            <CardContent className="space-y-1.5 text-sm">
               {b.city && <div className="flex items-center gap-2 text-muted-foreground"><MapPin className="w-3.5 h-3.5" /> {b.city}{b.address && `, ${b.address}`}</div>}
               {b.phone && <div className="flex items-center gap-2 text-muted-foreground"><Phone className="w-3.5 h-3.5" /> {b.phone}</div>}
+              {b.tin_number && <div className="text-[11px] text-muted-foreground">TIN: <span className="font-mono">{b.tin_number}</span>{b.vat_number && ` · VAT: ${b.vat_number}`}</div>}
+              {b.default_warehouse && <div className="text-[11px] text-muted-foreground">WH: {b.default_warehouse}{b.stock_location && ` / ${b.stock_location}`}</div>}
+              {b.gl_cost_center && <div className="text-[11px] text-muted-foreground">CC: {b.gl_cost_center}{b.profit_center && ` · PC: ${b.profit_center}`}</div>}
             </CardContent>
           </Card>
         ))}

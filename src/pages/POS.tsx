@@ -232,6 +232,15 @@ export default function POS() {
           }));
           await supabase.from('notifications').insert(notifications);
         }
+
+        // SMS reminder to credit customer
+        const { data: custFull } = await supabase.from('customers').select('phone').eq('id', creditCustomer.id).single();
+        if (custFull?.phone) {
+          const phone = custFull.phone.startsWith('+') ? custFull.phone : `+251${custFull.phone.replace(/^0/, '')}`;
+          supabase.functions.invoke('send-sms', {
+            body: { to: phone, message: `GEBEYA: Credit sale ${formatETB(total)} recorded. Due ${creditDueDate}. Receipt ${receiptId}.` },
+          }).catch(() => {});
+        }
       }
 
       setProducts(prev => prev.map(p => {
