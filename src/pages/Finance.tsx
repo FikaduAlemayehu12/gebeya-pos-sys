@@ -20,6 +20,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import BankCsvImportDialog from '@/components/finance/BankCsvImportDialog';
+import ComplianceTab from '@/components/finance/ComplianceTab';
 
 const fmt = (n: number, cur = 'ETB') =>
   `${cur} ${Number(n || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}`;
