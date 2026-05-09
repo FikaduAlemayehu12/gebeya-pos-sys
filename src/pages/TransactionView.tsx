@@ -159,16 +159,35 @@ export default function TransactionView() {
   return (
     <div className="min-h-screen bg-background p-4 sm:p-8 flex flex-col items-center">
       {/* Action buttons */}
-      <div className="w-full max-w-md flex gap-2 mb-4 print:hidden">
+      <div className="w-full max-w-md flex gap-2 mb-4 print:hidden flex-wrap">
         <Button variant="outline" size="sm" className="flex-1 gap-1.5 text-xs" onClick={handlePrint}>
           <Printer className="w-3.5 h-3.5" /> Print / ያትሙ
         </Button>
         <Button variant="outline" size="sm" className="flex-1 gap-1.5 text-xs" onClick={handleDownload}>
           <Download className="w-3.5 h-3.5" /> Download
         </Button>
+        {canVoid && !isVoid && (
+          <Button variant="destructive" size="sm" className="flex-1 gap-1.5 text-xs" onClick={() => setVoidOpen(true)}>
+            <Ban className="w-3.5 h-3.5" /> Void invoice
+          </Button>
+        )}
       </div>
 
-      <Card className="w-full max-w-md bg-card">
+      <VoidInvoiceDialog
+        open={voidOpen}
+        onClose={() => setVoidOpen(false)}
+        sale={sale ? { id: sale.id, receipt_id: sale.receipt_id, total: Number(sale.total), created_at: sale.created_at, status: sale.status } : null}
+        onVoided={refetch}
+      />
+
+      <Card className={`w-full max-w-md bg-card relative ${isVoid ? 'border-destructive' : ''}`}>
+        {isVoid && (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+            <span className="text-destructive/20 text-7xl font-black tracking-widest -rotate-12 select-none">
+              VOIDED
+            </span>
+          </div>
+        )}
         <CardHeader className="text-center pb-2">
           <CardTitle className="text-lg flex items-center justify-center gap-2">
             <Receipt className="w-5 h-5" /> GEBEYA POS
@@ -178,7 +197,16 @@ export default function TransactionView() {
         <CardContent className="space-y-0 font-mono text-xs" ref={receiptRef}>
           {/* Status */}
           <div className="text-center mb-3">
-            {isPaid ? (
+            {isVoid ? (
+              <div className="space-y-1">
+                <Badge variant="destructive" className="gap-1 text-sm px-4 py-1">
+                  <ShieldAlert className="w-4 h-4" /> VOIDED / ተሰርዟል
+                </Badge>
+                {creditNote && <p className="text-[10px] text-muted-foreground">Credit Note: <span className="font-mono font-bold">{creditNote.credit_note_number}</span></p>}
+                {sale.void_reason && <p className="text-[10px] text-destructive">Reason: {sale.void_reason}</p>}
+                {sale.voided_at && <p className="text-[10px] text-muted-foreground">Voided {new Date(sale.voided_at).toLocaleString()}</p>}
+              </div>
+            ) : isPaid ? (
               <Badge className="bg-green-600 text-white gap-1 text-sm px-4 py-1">
                 <CheckCircle className="w-4 h-4" /> PAID / ተከፍሏል
               </Badge>
