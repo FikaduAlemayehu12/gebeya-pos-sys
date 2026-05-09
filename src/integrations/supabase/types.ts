@@ -1031,6 +1031,87 @@ export type Database = {
           },
         ]
       }
+      credit_notes: {
+        Row: {
+          branch_id: string | null
+          cashier_id: string | null
+          credit_note_number: string
+          customer_id: string | null
+          id: string
+          issued_at: string
+          issued_by: string | null
+          mor_sync_status: string
+          mor_synced_at: string | null
+          original_receipt_id: string
+          original_sale_id: string
+          payment_method: string | null
+          qr_payload: string | null
+          reason: string
+          subtotal: number
+          tenant_id: string | null
+          total: number
+          vat: number
+          withholding_amount: number
+        }
+        Insert: {
+          branch_id?: string | null
+          cashier_id?: string | null
+          credit_note_number: string
+          customer_id?: string | null
+          id?: string
+          issued_at?: string
+          issued_by?: string | null
+          mor_sync_status?: string
+          mor_synced_at?: string | null
+          original_receipt_id: string
+          original_sale_id: string
+          payment_method?: string | null
+          qr_payload?: string | null
+          reason: string
+          subtotal?: number
+          tenant_id?: string | null
+          total?: number
+          vat?: number
+          withholding_amount?: number
+        }
+        Update: {
+          branch_id?: string | null
+          cashier_id?: string | null
+          credit_note_number?: string
+          customer_id?: string | null
+          id?: string
+          issued_at?: string
+          issued_by?: string | null
+          mor_sync_status?: string
+          mor_synced_at?: string | null
+          original_receipt_id?: string
+          original_sale_id?: string
+          payment_method?: string | null
+          qr_payload?: string | null
+          reason?: string
+          subtotal?: number
+          tenant_id?: string | null
+          total?: number
+          vat?: number
+          withholding_amount?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credit_notes_original_sale_id_fkey"
+            columns: ["original_sale_id"]
+            isOneToOne: false
+            referencedRelation: "sales"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "credit_notes_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       credit_payments: {
         Row: {
           amount: number
@@ -1790,6 +1871,66 @@ export type Database = {
           },
         ]
       }
+      invoice_void_requests: {
+        Row: {
+          days_since_invoice: number
+          id: string
+          reason: string
+          receipt_id: string
+          requested_at: string
+          requested_by: string | null
+          review_notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          sale_id: string
+          status: string
+          tenant_id: string | null
+        }
+        Insert: {
+          days_since_invoice: number
+          id?: string
+          reason: string
+          receipt_id: string
+          requested_at?: string
+          requested_by?: string | null
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          sale_id: string
+          status?: string
+          tenant_id?: string | null
+        }
+        Update: {
+          days_since_invoice?: number
+          id?: string
+          reason?: string
+          receipt_id?: string
+          requested_at?: string
+          requested_by?: string | null
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          sale_id?: string
+          status?: string
+          tenant_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoice_void_requests_sale_id_fkey"
+            columns: ["sale_id"]
+            isOneToOne: false
+            referencedRelation: "sales"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoice_void_requests_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       journal_entries: {
         Row: {
           created_at: string
@@ -1961,6 +2102,56 @@ export type Database = {
           },
           {
             foreignKeyName: "leave_requests_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mor_sync_queue: {
+        Row: {
+          attempts: number
+          created_at: string
+          document_id: string
+          document_type: string
+          id: string
+          last_error: string | null
+          payload: Json
+          reference: string
+          sent_at: string | null
+          status: string
+          tenant_id: string | null
+        }
+        Insert: {
+          attempts?: number
+          created_at?: string
+          document_id: string
+          document_type: string
+          id?: string
+          last_error?: string | null
+          payload: Json
+          reference: string
+          sent_at?: string | null
+          status?: string
+          tenant_id?: string | null
+        }
+        Update: {
+          attempts?: number
+          created_at?: string
+          document_id?: string
+          document_type?: string
+          id?: string
+          last_error?: string | null
+          payload?: Json
+          reference?: string
+          sent_at?: string | null
+          status?: string
+          tenant_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mor_sync_queue_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "companies"
@@ -3418,40 +3609,76 @@ export type Database = {
       }
       sales: {
         Row: {
+          branch_id: string | null
           cashier_id: string | null
           created_at: string
           customer_id: string | null
           id: string
+          mor_qr_payload: string | null
+          mor_sync_status: string
+          mor_synced_at: string | null
           payment_method: string
           receipt_id: string
+          status: string
           subtotal: number
           tenant_id: string | null
           total: number
           vat: number
+          void_approval_status: string | null
+          void_approved_at: string | null
+          void_approved_by: string | null
+          void_reason: string | null
+          voided_at: string | null
+          voided_by: string | null
+          withholding_amount: number
         }
         Insert: {
+          branch_id?: string | null
           cashier_id?: string | null
           created_at?: string
           customer_id?: string | null
           id?: string
+          mor_qr_payload?: string | null
+          mor_sync_status?: string
+          mor_synced_at?: string | null
           payment_method?: string
           receipt_id: string
+          status?: string
           subtotal?: number
           tenant_id?: string | null
           total?: number
           vat?: number
+          void_approval_status?: string | null
+          void_approved_at?: string | null
+          void_approved_by?: string | null
+          void_reason?: string | null
+          voided_at?: string | null
+          voided_by?: string | null
+          withholding_amount?: number
         }
         Update: {
+          branch_id?: string | null
           cashier_id?: string | null
           created_at?: string
           customer_id?: string | null
           id?: string
+          mor_qr_payload?: string | null
+          mor_sync_status?: string
+          mor_synced_at?: string | null
           payment_method?: string
           receipt_id?: string
+          status?: string
           subtotal?: number
           tenant_id?: string | null
           total?: number
           vat?: number
+          void_approval_status?: string | null
+          void_approved_at?: string | null
+          void_approved_by?: string | null
+          void_reason?: string | null
+          voided_at?: string | null
+          voided_by?: string | null
+          withholding_amount?: number
         }
         Relationships: [
           {
@@ -4124,8 +4351,16 @@ export type Database = {
     }
     Functions: {
       account_id_by_code: { Args: { _code: string }; Returns: string }
+      approve_void_request: {
+        Args: { _decision: string; _notes?: string; _request_id: string }
+        Returns: Json
+      }
       belongs_to_company: { Args: { _company_id: string }; Returns: boolean }
       current_tenant_id: { Args: never; Returns: string }
+      execute_sale_void: {
+        Args: { _approver?: string; _reason: string; _sale_id: string }
+        Returns: string
+      }
       get_employee_id_for_user: { Args: { _user_id: string }; Returns: string }
       has_role: {
         Args: {
@@ -4151,6 +4386,10 @@ export type Database = {
           _reference: string
         }
         Returns: string
+      }
+      request_void_sale: {
+        Args: { _reason: string; _sale_id: string }
+        Returns: Json
       }
       set_active_tenant: { Args: { _company_id: string }; Returns: boolean }
     }
