@@ -53,6 +53,7 @@ export default function Finance() {
           <TabsTrigger value="budgets">Budgets</TabsTrigger>
           <TabsTrigger value="accounts">Accounts</TabsTrigger>
           <TabsTrigger value="journals">Journals</TabsTrigger>
+          <TabsTrigger value="compliance"><ShieldCheck className="w-3.5 h-3.5 mr-1" />MoR Compliance</TabsTrigger>
           {canApprove && <TabsTrigger value="settings"><SettingsIcon className="w-3.5 h-3.5 mr-1" />Rules</TabsTrigger>}
         </TabsList>
 
