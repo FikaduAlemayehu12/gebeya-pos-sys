@@ -130,17 +130,23 @@ export default function TransactionView() {
   };
 
   const isPaid = sale.payment_method !== 'credit' || (creditSale && Number(creditSale.paid_amount) >= Number(creditSale.total_amount));
-  // Encode receipt data directly into QR code
+  // MoR-compliant QR payload (Directive 1099/2025)
   const qrData = JSON.stringify({
     receipt: sale.receipt_id,
     date: sale.created_at,
-    items: items.map(i => ({ n: i.product_name, q: i.quantity, p: Number(i.unit_price), t: Number(i.total) })),
+    tenant: sale.tenant_id,
+    branch: sale.branch_id,
+    cashier: sale.cashier_id,
     subtotal: Number(sale.subtotal),
     vat: Number(sale.vat),
+    wht: Number(sale.withholding_amount || 0),
     total: Number(sale.total),
     method: sale.payment_method,
+    status: sale.status || 'active',
+    ...(isVoid ? { void: { reason: sale.void_reason, at: sale.voided_at, cn: creditNote?.credit_note_number } } : {}),
     ...(customer ? { customer: customer.name } : {}),
     ...(creditSale ? { credit: { paid: Number(creditSale.paid_amount), due: creditSale.due_date } } : {}),
+    items: items.map(i => ({ n: i.product_name, q: i.quantity, p: Number(i.unit_price), t: Number(i.total) })),
   });
 
   const paymentOptions = [
