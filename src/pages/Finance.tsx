@@ -65,6 +65,7 @@ export default function Finance() {
         <TabsContent value="budgets"><BudgetsTab canApprove={canApprove} /></TabsContent>
         <TabsContent value="accounts"><AccountsTab canApprove={canApprove} /></TabsContent>
         <TabsContent value="journals"><JournalsTab /></TabsContent>
+        <TabsContent value="compliance"><ComplianceTab canApprove={canApprove} /></TabsContent>
         {canApprove && <TabsContent value="settings"><RulesTab /></TabsContent>}
       </Tabs>
     </div>
