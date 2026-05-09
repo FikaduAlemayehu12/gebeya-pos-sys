@@ -4,8 +4,11 @@ import { formatETB } from '@/lib/ethiopian';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Loader2, Receipt, CheckCircle, CreditCard, Smartphone, Building2, Banknote, Download, Printer, Phone, Mail, Clock } from 'lucide-react';
+import { Loader2, Receipt, CheckCircle, CreditCard, Smartphone, Building2, Banknote, Download, Printer, Phone, Mail, Clock, Ban, ShieldAlert } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
+import { useAuth } from '@/contexts/AuthContext';
+import VoidInvoiceDialog from '@/components/finance/VoidInvoiceDialog';
+import { supabase } from '@/integrations/supabase/client';
 
 interface SaleItem {
   product_name: string;
