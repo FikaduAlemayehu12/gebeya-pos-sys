@@ -27,6 +27,27 @@ export default function TransactionView() {
   const [cashier, setCashier] = useState<any>(null);
   const [customer, setCustomer] = useState<any>(null);
   const receiptRef = useRef<HTMLDivElement>(null);
+  const { hasRole, session } = useAuth();
+  const [voidOpen, setVoidOpen] = useState(false);
+  const [creditNote, setCreditNote] = useState<any>(null);
+
+  const canVoid = !!session && (hasRole('admin') || hasRole('cashier') || hasRole('finance_manager'));
+  const isVoid = sale?.status === 'void';
+
+  useEffect(() => {
+    if (!sale?.id) return;
+    supabase.from('credit_notes').select('*').eq('original_sale_id', sale.id).maybeSingle()
+      .then(({ data }) => setCreditNote(data));
+  }, [sale?.id, sale?.status]);
+
+  const refetch = async () => {
+    if (!receiptId) return;
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+    const res = await fetch(`${supabaseUrl}/functions/v1/get-receipt?receipt_id=${encodeURIComponent(receiptId)}`,
+      { headers: { Authorization: `Bearer ${anonKey}`, 'Content-Type': 'application/json' } });
+    if (res.ok) { const d = await res.json(); setSale(d.sale); }
+  };
 
   useEffect(() => {
     const fetchTransaction = async () => {
