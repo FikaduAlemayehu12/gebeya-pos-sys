@@ -20,6 +20,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import BankCsvImportDialog from '@/components/finance/BankCsvImportDialog';
+import ComplianceTab from '@/components/finance/ComplianceTab';
 
 const fmt = (n: number, cur = 'ETB') =>
   `${cur} ${Number(n || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}`;
@@ -52,6 +53,7 @@ export default function Finance() {
           <TabsTrigger value="budgets">Budgets</TabsTrigger>
           <TabsTrigger value="accounts">Accounts</TabsTrigger>
           <TabsTrigger value="journals">Journals</TabsTrigger>
+          <TabsTrigger value="compliance"><ShieldCheck className="w-3.5 h-3.5 mr-1" />MoR Compliance</TabsTrigger>
           {canApprove && <TabsTrigger value="settings"><SettingsIcon className="w-3.5 h-3.5 mr-1" />Rules</TabsTrigger>}
         </TabsList>
 
@@ -63,6 +65,7 @@ export default function Finance() {
         <TabsContent value="budgets"><BudgetsTab canApprove={canApprove} /></TabsContent>
         <TabsContent value="accounts"><AccountsTab canApprove={canApprove} /></TabsContent>
         <TabsContent value="journals"><JournalsTab /></TabsContent>
+        <TabsContent value="compliance"><ComplianceTab canApprove={canApprove} /></TabsContent>
         {canApprove && <TabsContent value="settings"><RulesTab /></TabsContent>}
       </Tabs>
     </div>

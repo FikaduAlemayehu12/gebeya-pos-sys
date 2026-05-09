@@ -4,8 +4,11 @@ import { formatETB } from '@/lib/ethiopian';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Loader2, Receipt, CheckCircle, CreditCard, Smartphone, Building2, Banknote, Download, Printer, Phone, Mail, Clock } from 'lucide-react';
+import { Loader2, Receipt, CheckCircle, CreditCard, Smartphone, Building2, Banknote, Download, Printer, Phone, Mail, Clock, Ban, ShieldAlert } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
+import { useAuth } from '@/contexts/AuthContext';
+import VoidInvoiceDialog from '@/components/finance/VoidInvoiceDialog';
+import { supabase } from '@/integrations/supabase/client';
 
 interface SaleItem {
   product_name: string;
@@ -24,6 +27,27 @@ export default function TransactionView() {
   const [cashier, setCashier] = useState<any>(null);
   const [customer, setCustomer] = useState<any>(null);
   const receiptRef = useRef<HTMLDivElement>(null);
+  const { hasRole, session } = useAuth();
+  const [voidOpen, setVoidOpen] = useState(false);
+  const [creditNote, setCreditNote] = useState<any>(null);
+
+  const canVoid = !!session && (hasRole('admin') || hasRole('cashier') || hasRole('finance_manager'));
+  const isVoid = sale?.status === 'void';
+
+  useEffect(() => {
+    if (!sale?.id) return;
+    supabase.from('credit_notes').select('*').eq('original_sale_id', sale.id).maybeSingle()
+      .then(({ data }) => setCreditNote(data));
+  }, [sale?.id, sale?.status]);
+
+  const refetch = async () => {
+    if (!receiptId) return;
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+    const res = await fetch(`${supabaseUrl}/functions/v1/get-receipt?receipt_id=${encodeURIComponent(receiptId)}`,
+      { headers: { Authorization: `Bearer ${anonKey}`, 'Content-Type': 'application/json' } });
+    if (res.ok) { const d = await res.json(); setSale(d.sale); }
+  };
 
   useEffect(() => {
     const fetchTransaction = async () => {
@@ -106,17 +130,23 @@ export default function TransactionView() {
   };
 
   const isPaid = sale.payment_method !== 'credit' || (creditSale && Number(creditSale.paid_amount) >= Number(creditSale.total_amount));
-  // Encode receipt data directly into QR code
+  // MoR-compliant QR payload (Directive 1099/2025)
   const qrData = JSON.stringify({
     receipt: sale.receipt_id,
     date: sale.created_at,
-    items: items.map(i => ({ n: i.product_name, q: i.quantity, p: Number(i.unit_price), t: Number(i.total) })),
+    tenant: sale.tenant_id,
+    branch: sale.branch_id,
+    cashier: sale.cashier_id,
     subtotal: Number(sale.subtotal),
     vat: Number(sale.vat),
+    wht: Number(sale.withholding_amount || 0),
     total: Number(sale.total),
     method: sale.payment_method,
+    status: sale.status || 'active',
+    ...(isVoid ? { void: { reason: sale.void_reason, at: sale.voided_at, cn: creditNote?.credit_note_number } } : {}),
     ...(customer ? { customer: customer.name } : {}),
     ...(creditSale ? { credit: { paid: Number(creditSale.paid_amount), due: creditSale.due_date } } : {}),
+    items: items.map(i => ({ n: i.product_name, q: i.quantity, p: Number(i.unit_price), t: Number(i.total) })),
   });
 
   const paymentOptions = [
@@ -129,16 +159,35 @@ export default function TransactionView() {
   return (
     <div className="min-h-screen bg-background p-4 sm:p-8 flex flex-col items-center">
       {/* Action buttons */}
-      <div className="w-full max-w-md flex gap-2 mb-4 print:hidden">
+      <div className="w-full max-w-md flex gap-2 mb-4 print:hidden flex-wrap">
         <Button variant="outline" size="sm" className="flex-1 gap-1.5 text-xs" onClick={handlePrint}>
           <Printer className="w-3.5 h-3.5" /> Print / ያትሙ
         </Button>
         <Button variant="outline" size="sm" className="flex-1 gap-1.5 text-xs" onClick={handleDownload}>
           <Download className="w-3.5 h-3.5" /> Download
         </Button>
+        {canVoid && !isVoid && (
+          <Button variant="destructive" size="sm" className="flex-1 gap-1.5 text-xs" onClick={() => setVoidOpen(true)}>
+            <Ban className="w-3.5 h-3.5" /> Void invoice
+          </Button>
+        )}
       </div>
 
-      <Card className="w-full max-w-md bg-card">
+      <VoidInvoiceDialog
+        open={voidOpen}
+        onClose={() => setVoidOpen(false)}
+        sale={sale ? { id: sale.id, receipt_id: sale.receipt_id, total: Number(sale.total), created_at: sale.created_at, status: sale.status } : null}
+        onVoided={refetch}
+      />
+
+      <Card className={`w-full max-w-md bg-card relative ${isVoid ? 'border-destructive' : ''}`}>
+        {isVoid && (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+            <span className="text-destructive/20 text-7xl font-black tracking-widest -rotate-12 select-none">
+              VOIDED
+            </span>
+          </div>
+        )}
         <CardHeader className="text-center pb-2">
           <CardTitle className="text-lg flex items-center justify-center gap-2">
             <Receipt className="w-5 h-5" /> GEBEYA POS
@@ -148,7 +197,16 @@ export default function TransactionView() {
         <CardContent className="space-y-0 font-mono text-xs" ref={receiptRef}>
           {/* Status */}
           <div className="text-center mb-3">
-            {isPaid ? (
+            {isVoid ? (
+              <div className="space-y-1">
+                <Badge variant="destructive" className="gap-1 text-sm px-4 py-1">
+                  <ShieldAlert className="w-4 h-4" /> VOIDED / ተሰርዟል
+                </Badge>
+                {creditNote && <p className="text-[10px] text-muted-foreground">Credit Note: <span className="font-mono font-bold">{creditNote.credit_note_number}</span></p>}
+                {sale.void_reason && <p className="text-[10px] text-destructive">Reason: {sale.void_reason}</p>}
+                {sale.voided_at && <p className="text-[10px] text-muted-foreground">Voided {new Date(sale.voided_at).toLocaleString()}</p>}
+              </div>
+            ) : isPaid ? (
               <Badge className="bg-green-600 text-white gap-1 text-sm px-4 py-1">
                 <CheckCircle className="w-4 h-4" /> PAID / ተከፍሏል
               </Badge>
