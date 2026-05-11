@@ -61,13 +61,31 @@ export default function ComplianceTab({ canApprove }: { canApprove: boolean }) {
     load();
   };
 
-  const markSent = async (id: string) => {
-    const { error } = await supabase.from('mor_sync_queue').update({
-      status: 'sent', sent_at: new Date().toISOString(), attempts: 1,
-    }).eq('id', id);
-    if (error) { toast({ title: 'Update failed', description: error.message, variant: 'destructive' }); return; }
-    toast({ title: 'Marked as sent to MoR' });
+  const requeue = async (id: string) => {
+    const { error } = await supabase.rpc('mor_requeue', { _id: id });
+    if (error) { toast({ title: 'Requeue failed', description: error.message, variant: 'destructive' }); return; }
+    toast({ title: 'Requeued for retry' });
     load();
+  };
+
+  const runWorkerNow = async () => {
+    setBusy(true);
+    const { data, error } = await supabase.functions.invoke('mor-sync-worker', { body: {} });
+    setBusy(false);
+    if (error) { toast({ title: 'Worker failed', description: error.message, variant: 'destructive' }); return; }
+    toast({ title: 'MoR worker run', description: `Processed ${data?.processed || 0}; sent ${data?.sent || 0}, failed ${data?.failed || 0}, dead ${data?.dead || 0}.` });
+    load();
+  };
+
+  const exportData = (kind: 'csv' | 'xlsx', tab: 'voided' | 'credit-notes' | 'mor' | 'requests') => {
+    const rows =
+      tab === 'voided' ? voidedSales :
+      tab === 'credit-notes' ? creditNotes :
+      tab === 'requests' ? requests :
+      queue;
+    if (!rows.length) { toast({ title: 'Nothing to export' }); return; }
+    const filename = `mor-${tab}-${new Date().toISOString().slice(0,10)}`;
+    kind === 'csv' ? exportCSV(rows, filename) : exportXLSX(rows, filename, tab);
   };
 
   const pending = requests.filter(r => r.status === 'pending');
