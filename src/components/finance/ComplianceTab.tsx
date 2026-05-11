@@ -149,26 +149,45 @@ export default function ComplianceTab({ canApprove }: { canApprove: boolean }) {
         </TabsContent>
 
         <TabsContent value="voided">
-          <Card><CardHeader><CardTitle className="text-base">Voided invoices</CardTitle></CardHeader>
+          <Card>
+            <CardHeader className="flex-row items-center justify-between">
+              <CardTitle className="text-base">Voided invoices — approval timeline</CardTitle>
+              <div className="flex gap-2">
+                <Button size="sm" variant="outline" onClick={() => exportData('csv', 'voided')}><Download className="w-3.5 h-3.5 mr-1" /> CSV</Button>
+                <Button size="sm" variant="outline" onClick={() => exportData('xlsx', 'voided')}><Download className="w-3.5 h-3.5 mr-1" /> XLSX</Button>
+              </div>
+            </CardHeader>
             <CardContent>
               <Table>
                 <TableHeader><TableRow>
                   <TableHead>Voided at</TableHead><TableHead>Receipt</TableHead><TableHead>Total</TableHead>
-                  <TableHead>Reason</TableHead><TableHead>MoR sync</TableHead>
+                  <TableHead>Reason</TableHead><TableHead>Cashier</TableHead><TableHead>Approval</TableHead><TableHead>MoR</TableHead>
                 </TableRow></TableHeader>
                 <TableBody>
-                  {voidedSales.length === 0 && <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground py-8">None.</TableCell></TableRow>}
-                  {voidedSales.map(s => (
-                    <TableRow key={s.id}>
-                      <TableCell className="text-xs whitespace-nowrap">{s.voided_at ? new Date(s.voided_at).toLocaleString() : '—'}</TableCell>
-                      <TableCell className="font-mono text-xs"><Link to={`/receipt/${s.receipt_id}`} className="underline">{s.receipt_id}</Link></TableCell>
-                      <TableCell className="text-xs">{fmt(s.total)}</TableCell>
-                      <TableCell className="text-xs max-w-[300px] truncate">{s.void_reason}</TableCell>
-                      <TableCell>
-                        <Badge variant={s.mor_sync_status === 'sent' ? 'default' : 'secondary'}>{s.mor_sync_status}</Badge>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {voidedSales.length === 0 && <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-8">None.</TableCell></TableRow>}
+                  {voidedSales.map(s => {
+                    const linked = requests.find(r => r.sale_id === s.id);
+                    return (
+                      <TableRow key={s.id}>
+                        <TableCell className="text-xs whitespace-nowrap">{s.voided_at ? new Date(s.voided_at).toLocaleString() : '—'}</TableCell>
+                        <TableCell className="font-mono text-xs"><Link to={`/receipt/${s.receipt_id}`} className="underline">{s.receipt_id}</Link></TableCell>
+                        <TableCell className="text-xs">{fmt(s.total)}</TableCell>
+                        <TableCell className="text-xs max-w-[260px] truncate">{s.void_reason}</TableCell>
+                        <TableCell className="text-[10px] font-mono">{(s.voided_by || '').slice(0, 8) || '—'}</TableCell>
+                        <TableCell>
+                          {linked ? (
+                            <div className="text-[11px] leading-tight">
+                              <div>Filed: {new Date(linked.requested_at).toLocaleDateString()}</div>
+                              <div>{linked.status} · by {(linked.reviewed_by || '').slice(0,8) || '—'}</div>
+                            </div>
+                          ) : <Badge variant="outline" className="text-[10px]">Auto (≤7d)</Badge>}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={s.mor_sync_status === 'sent' ? 'default' : 'secondary'}>{s.mor_sync_status}</Badge>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </CardContent>
@@ -176,7 +195,14 @@ export default function ComplianceTab({ canApprove }: { canApprove: boolean }) {
         </TabsContent>
 
         <TabsContent value="credit-notes">
-          <Card><CardHeader><CardTitle className="text-base">Credit notes</CardTitle></CardHeader>
+          <Card>
+            <CardHeader className="flex-row items-center justify-between">
+              <CardTitle className="text-base">Credit notes</CardTitle>
+              <div className="flex gap-2">
+                <Button size="sm" variant="outline" onClick={() => exportData('csv', 'credit-notes')}><Download className="w-3.5 h-3.5 mr-1" /> CSV</Button>
+                <Button size="sm" variant="outline" onClick={() => exportData('xlsx', 'credit-notes')}><Download className="w-3.5 h-3.5 mr-1" /> XLSX</Button>
+              </div>
+            </CardHeader>
             <CardContent>
               <Table>
                 <TableHeader><TableRow>
