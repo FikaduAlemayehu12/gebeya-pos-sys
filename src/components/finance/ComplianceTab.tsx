@@ -9,9 +9,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { ShieldAlert, FileText, Send, RefreshCw, CheckCircle2, XCircle, Clock, Loader2 } from 'lucide-react';
+import { ShieldAlert, FileText, Send, RefreshCw, CheckCircle2, XCircle, Clock, Loader2, Download, Repeat, Activity } from 'lucide-react';
 import StatCard from '@/components/StatCard';
 import { Link } from 'react-router-dom';
+import { exportCSV, exportXLSX } from '@/lib/exporters';
 
 const fmt = (n: number) => `ETB ${Number(n || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}`;
 
