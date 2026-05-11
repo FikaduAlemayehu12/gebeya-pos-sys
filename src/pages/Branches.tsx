@@ -32,7 +32,7 @@ const EMPTY_BRANCH = {
   default_warehouse:'', stock_location:'',
   timezone:'Africa/Addis_Ababa', currency:'ETB',
   doc_prefix_invoice:'INV', doc_prefix_po:'PO', doc_prefix_receipt:'RCT',
-  manager_user_id:'',
+  manager_user_id:'', logo_url:'',
 };
 
 const fmt = (n: number) => `ETB ${Number(n||0).toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
