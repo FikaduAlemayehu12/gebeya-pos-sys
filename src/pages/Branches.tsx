@@ -32,7 +32,7 @@ const EMPTY_BRANCH = {
   default_warehouse:'', stock_location:'',
   timezone:'Africa/Addis_Ababa', currency:'ETB',
   doc_prefix_invoice:'INV', doc_prefix_po:'PO', doc_prefix_receipt:'RCT',
-  manager_user_id:'',
+  manager_user_id:'', logo_url:'',
 };
 
 const fmt = (n: number) => `ETB ${Number(n||0).toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
@@ -115,15 +115,16 @@ function DirectoryTab() {
           <DialogTrigger asChild><Button onClick={startNew}><Plus className="w-4 h-4 mr-1" /> New Branch</Button></DialogTrigger>
           <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
             <DialogHeader><DialogTitle>{editId ? 'Edit Branch' : 'Add Branch'}</DialogTitle></DialogHeader>
-            <Tabs defaultValue="identity" className="space-y-3">
-              <TabsList className="flex-wrap h-auto">
-                <TabsTrigger value="identity">Identity</TabsTrigger>
-                <TabsTrigger value="legal">Legal</TabsTrigger>
-                <TabsTrigger value="finance">Finance</TabsTrigger>
-                <TabsTrigger value="inventory">Inventory</TabsTrigger>
-                <TabsTrigger value="operations">Operations</TabsTrigger>
-              </TabsList>
-              <TabsContent value="identity" className="space-y-3">
+
+            <div className="space-y-6">
+              <BranchLogoUploader
+                value={(form as any).logo_url || ''}
+                onChange={(url) => setForm({ ...form, logo_url: url } as any)}
+                branchCode={form.code}
+              />
+
+              <section className="space-y-3">
+                <h3 className="text-sm font-semibold text-foreground border-b pb-1">Identity</h3>
                 <div className="grid grid-cols-2 gap-3">
                   <div><Label>Name *</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
                   <div><Label>Code *</Label><Input value={form.code} onChange={(e) => setForm({ ...form, code: e.target.value })} placeholder="BR-001" /></div>
@@ -134,15 +135,19 @@ function DirectoryTab() {
                   <div><Label>Region</Label><Input value={form.region} onChange={(e) => setForm({ ...form, region: e.target.value })} placeholder="Addis / North / South" /></div>
                   <div><Label>Phone</Label><Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></div>
                 </div>
-              </TabsContent>
-              <TabsContent value="legal" className="space-y-3">
+              </section>
+
+              <section className="space-y-3">
+                <h3 className="text-sm font-semibold text-foreground border-b pb-1">Legal</h3>
                 <div className="grid grid-cols-2 gap-3">
                   <div><Label>TIN</Label><Input value={form.tin_number} onChange={(e) => setForm({ ...form, tin_number: e.target.value })} placeholder="0012345678" /></div>
                   <div><Label>VAT Reg. #</Label><Input value={form.vat_number} onChange={(e) => setForm({ ...form, vat_number: e.target.value })} /></div>
                 </div>
                 <div><Label>Business License #</Label><Input value={form.business_license} onChange={(e) => setForm({ ...form, business_license: e.target.value })} /></div>
-              </TabsContent>
-              <TabsContent value="finance" className="space-y-3">
+              </section>
+
+              <section className="space-y-3">
+                <h3 className="text-sm font-semibold text-foreground border-b pb-1">Finance</h3>
                 <div><Label>Default Bank Account</Label>
                   <Select value={form.default_bank_account_id || ''} onValueChange={(v) => setForm({ ...form, default_bank_account_id: v })}>
                     <SelectTrigger><SelectValue placeholder="Pick bank account" /></SelectTrigger>
@@ -153,14 +158,18 @@ function DirectoryTab() {
                   <div><Label>GL / Cost Center</Label><Input value={form.gl_cost_center} onChange={(e) => setForm({ ...form, gl_cost_center: e.target.value })} placeholder="CC-101" /></div>
                   <div><Label>Profit Center</Label><Input value={form.profit_center} onChange={(e) => setForm({ ...form, profit_center: e.target.value })} placeholder="PC-501" /></div>
                 </div>
-              </TabsContent>
-              <TabsContent value="inventory" className="space-y-3">
+              </section>
+
+              <section className="space-y-3">
+                <h3 className="text-sm font-semibold text-foreground border-b pb-1">Inventory</h3>
                 <div className="grid grid-cols-2 gap-3">
                   <div><Label>Default Warehouse</Label><Input value={form.default_warehouse} onChange={(e) => setForm({ ...form, default_warehouse: e.target.value })} placeholder="WH-Main" /></div>
                   <div><Label>Stock Location</Label><Input value={form.stock_location} onChange={(e) => setForm({ ...form, stock_location: e.target.value })} placeholder="Aisle A1" /></div>
                 </div>
-              </TabsContent>
-              <TabsContent value="operations" className="space-y-3">
+              </section>
+
+              <section className="space-y-3">
+                <h3 className="text-sm font-semibold text-foreground border-b pb-1">Operations</h3>
                 <div className="grid grid-cols-2 gap-3">
                   <div><Label>Timezone</Label><Input value={form.timezone} onChange={(e) => setForm({ ...form, timezone: e.target.value })} /></div>
                   <div><Label>Currency</Label><Input value={form.currency} onChange={(e) => setForm({ ...form, currency: e.target.value })} /></div>
@@ -176,8 +185,9 @@ function DirectoryTab() {
                     <SelectContent>{managers.map((m: any) => <SelectItem key={m.user_id} value={m.user_id}>{m.profiles?.full_name || m.profiles?.email || m.user_id.slice(0,8)}</SelectItem>)}</SelectContent>
                   </Select>
                 </div>
-              </TabsContent>
-            </Tabs>
+              </section>
+            </div>
+
             <DialogFooter><Button onClick={save}>{editId ? 'Update' : 'Create'}</Button></DialogFooter>
           </DialogContent>
         </Dialog>
@@ -635,5 +645,40 @@ function RegionalTab() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+/* ───────── Branch logo uploader ───────── */
+function BranchLogoUploader({ value, onChange, branchCode }: { value: string; onChange: (url: string) => void; branchCode: string }) {
+  const { toast } = useToast();
+  const [busy, setBusy] = useState(false);
+
+  const upload = async (file: File) => {
+    if (file.size > 4 * 1024 * 1024) { toast({ title: 'Max 4 MB', variant: 'destructive' }); return; }
+    setBusy(true);
+    const ext = file.name.split('.').pop() || 'png';
+    const path = `branch-logos/${(branchCode || 'branch').toLowerCase().replace(/[^a-z0-9-]/g,'-')}-${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from('asset-images').upload(path, file, { upsert: true, contentType: file.type });
+    if (error) { setBusy(false); toast({ title: 'Upload failed', description: error.message, variant: 'destructive' }); return; }
+    const { data } = supabase.storage.from('asset-images').getPublicUrl(path);
+    onChange(data.publicUrl);
+    setBusy(false);
+    toast({ title: 'Logo uploaded' });
+  };
+
+  return (
+    <section className="space-y-2">
+      <h3 className="text-sm font-semibold text-foreground border-b pb-1">Branch / Company Logo</h3>
+      <div className="flex items-center gap-4">
+        <div className="w-24 h-24 rounded-lg border-2 border-dashed flex items-center justify-center bg-muted/30 overflow-hidden">
+          {value ? <img src={value} alt="Logo" className="w-full h-full object-contain" /> : <span className="text-xs text-muted-foreground">No logo</span>}
+        </div>
+        <div className="space-y-2">
+          <Input type="file" accept="image/*" disabled={busy} onChange={(e) => e.target.files?.[0] && upload(e.target.files[0])} />
+          {value && <Button type="button" size="sm" variant="ghost" onClick={() => onChange('')}>Remove</Button>}
+          <p className="text-[11px] text-muted-foreground">PNG/JPG, max 4 MB. Used on receipts and PDFs.</p>
+        </div>
+      </div>
+    </section>
   );
 }

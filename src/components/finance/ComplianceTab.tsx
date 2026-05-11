@@ -9,9 +9,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { ShieldAlert, FileText, Send, RefreshCw, CheckCircle2, XCircle, Clock, Loader2 } from 'lucide-react';
+import { ShieldAlert, FileText, Send, RefreshCw, CheckCircle2, XCircle, Clock, Loader2, Download, Repeat, Activity } from 'lucide-react';
 import StatCard from '@/components/StatCard';
 import { Link } from 'react-router-dom';
+import { exportCSV, exportXLSX } from '@/lib/exporters';
 
 const fmt = (n: number) => `ETB ${Number(n || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}`;
 
@@ -60,13 +61,31 @@ export default function ComplianceTab({ canApprove }: { canApprove: boolean }) {
     load();
   };
 
-  const markSent = async (id: string) => {
-    const { error } = await supabase.from('mor_sync_queue').update({
-      status: 'sent', sent_at: new Date().toISOString(), attempts: 1,
-    }).eq('id', id);
-    if (error) { toast({ title: 'Update failed', description: error.message, variant: 'destructive' }); return; }
-    toast({ title: 'Marked as sent to MoR' });
+  const requeue = async (id: string) => {
+    const { error } = await supabase.rpc('mor_requeue', { _id: id });
+    if (error) { toast({ title: 'Requeue failed', description: error.message, variant: 'destructive' }); return; }
+    toast({ title: 'Requeued for retry' });
     load();
+  };
+
+  const runWorkerNow = async () => {
+    setBusy(true);
+    const { data, error } = await supabase.functions.invoke('mor-sync-worker', { body: {} });
+    setBusy(false);
+    if (error) { toast({ title: 'Worker failed', description: error.message, variant: 'destructive' }); return; }
+    toast({ title: 'MoR worker run', description: `Processed ${data?.processed || 0}; sent ${data?.sent || 0}, failed ${data?.failed || 0}, dead ${data?.dead || 0}.` });
+    load();
+  };
+
+  const exportData = (kind: 'csv' | 'xlsx', tab: 'voided' | 'credit-notes' | 'mor' | 'requests') => {
+    const rows =
+      tab === 'voided' ? voidedSales :
+      tab === 'credit-notes' ? creditNotes :
+      tab === 'requests' ? requests :
+      queue;
+    if (!rows.length) { toast({ title: 'Nothing to export' }); return; }
+    const filename = `mor-${tab}-${new Date().toISOString().slice(0,10)}`;
+    kind === 'csv' ? exportCSV(rows, filename) : exportXLSX(rows, filename, tab);
   };
 
   const pending = requests.filter(r => r.status === 'pending');
@@ -130,26 +149,45 @@ export default function ComplianceTab({ canApprove }: { canApprove: boolean }) {
         </TabsContent>
 
         <TabsContent value="voided">
-          <Card><CardHeader><CardTitle className="text-base">Voided invoices</CardTitle></CardHeader>
+          <Card>
+            <CardHeader className="flex-row items-center justify-between">
+              <CardTitle className="text-base">Voided invoices — approval timeline</CardTitle>
+              <div className="flex gap-2">
+                <Button size="sm" variant="outline" onClick={() => exportData('csv', 'voided')}><Download className="w-3.5 h-3.5 mr-1" /> CSV</Button>
+                <Button size="sm" variant="outline" onClick={() => exportData('xlsx', 'voided')}><Download className="w-3.5 h-3.5 mr-1" /> XLSX</Button>
+              </div>
+            </CardHeader>
             <CardContent>
               <Table>
                 <TableHeader><TableRow>
                   <TableHead>Voided at</TableHead><TableHead>Receipt</TableHead><TableHead>Total</TableHead>
-                  <TableHead>Reason</TableHead><TableHead>MoR sync</TableHead>
+                  <TableHead>Reason</TableHead><TableHead>Cashier</TableHead><TableHead>Approval</TableHead><TableHead>MoR</TableHead>
                 </TableRow></TableHeader>
                 <TableBody>
-                  {voidedSales.length === 0 && <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground py-8">None.</TableCell></TableRow>}
-                  {voidedSales.map(s => (
-                    <TableRow key={s.id}>
-                      <TableCell className="text-xs whitespace-nowrap">{s.voided_at ? new Date(s.voided_at).toLocaleString() : '—'}</TableCell>
-                      <TableCell className="font-mono text-xs"><Link to={`/receipt/${s.receipt_id}`} className="underline">{s.receipt_id}</Link></TableCell>
-                      <TableCell className="text-xs">{fmt(s.total)}</TableCell>
-                      <TableCell className="text-xs max-w-[300px] truncate">{s.void_reason}</TableCell>
-                      <TableCell>
-                        <Badge variant={s.mor_sync_status === 'sent' ? 'default' : 'secondary'}>{s.mor_sync_status}</Badge>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {voidedSales.length === 0 && <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-8">None.</TableCell></TableRow>}
+                  {voidedSales.map(s => {
+                    const linked = requests.find(r => r.sale_id === s.id);
+                    return (
+                      <TableRow key={s.id}>
+                        <TableCell className="text-xs whitespace-nowrap">{s.voided_at ? new Date(s.voided_at).toLocaleString() : '—'}</TableCell>
+                        <TableCell className="font-mono text-xs"><Link to={`/receipt/${s.receipt_id}`} className="underline">{s.receipt_id}</Link></TableCell>
+                        <TableCell className="text-xs">{fmt(s.total)}</TableCell>
+                        <TableCell className="text-xs max-w-[260px] truncate">{s.void_reason}</TableCell>
+                        <TableCell className="text-[10px] font-mono">{(s.voided_by || '').slice(0, 8) || '—'}</TableCell>
+                        <TableCell>
+                          {linked ? (
+                            <div className="text-[11px] leading-tight">
+                              <div>Filed: {new Date(linked.requested_at).toLocaleDateString()}</div>
+                              <div>{linked.status} · by {(linked.reviewed_by || '').slice(0,8) || '—'}</div>
+                            </div>
+                          ) : <Badge variant="outline" className="text-[10px]">Auto (≤7d)</Badge>}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={s.mor_sync_status === 'sent' ? 'default' : 'secondary'}>{s.mor_sync_status}</Badge>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </CardContent>
@@ -157,7 +195,14 @@ export default function ComplianceTab({ canApprove }: { canApprove: boolean }) {
         </TabsContent>
 
         <TabsContent value="credit-notes">
-          <Card><CardHeader><CardTitle className="text-base">Credit notes</CardTitle></CardHeader>
+          <Card>
+            <CardHeader className="flex-row items-center justify-between">
+              <CardTitle className="text-base">Credit notes</CardTitle>
+              <div className="flex gap-2">
+                <Button size="sm" variant="outline" onClick={() => exportData('csv', 'credit-notes')}><Download className="w-3.5 h-3.5 mr-1" /> CSV</Button>
+                <Button size="sm" variant="outline" onClick={() => exportData('xlsx', 'credit-notes')}><Download className="w-3.5 h-3.5 mr-1" /> XLSX</Button>
+              </div>
+            </CardHeader>
             <CardContent>
               <Table>
                 <TableHeader><TableRow>
@@ -183,31 +228,47 @@ export default function ComplianceTab({ canApprove }: { canApprove: boolean }) {
         </TabsContent>
 
         <TabsContent value="mor">
-          <Card><CardHeader><CardTitle className="text-base">MoR sync queue</CardTitle></CardHeader>
+          <Card>
+            <CardHeader className="flex-row items-center justify-between">
+              <CardTitle className="text-base">MoR sync queue</CardTitle>
+              <div className="flex gap-2">
+                <Button size="sm" variant="outline" onClick={() => exportData('csv', 'mor')}><Download className="w-3.5 h-3.5 mr-1" /> CSV</Button>
+                <Button size="sm" variant="outline" onClick={() => exportData('xlsx', 'mor')}><Download className="w-3.5 h-3.5 mr-1" /> XLSX</Button>
+                {canApprove && (
+                  <Button size="sm" onClick={runWorkerNow} disabled={busy}>
+                    {busy ? <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" /> : <Activity className="w-3.5 h-3.5 mr-1" />}
+                    Run worker now
+                  </Button>
+                )}
+              </div>
+            </CardHeader>
             <CardContent>
               <p className="text-xs text-muted-foreground mb-3">
-                Outbound queue for the Ministry of Revenues real-time API. Mark items as sent once the integration confirms delivery.
+                Outbound queue with exponential backoff (1m → 5m → 30m → 2h → 8h → 24h, max 6 attempts before 'dead').
               </p>
               <Table>
                 <TableHeader><TableRow>
                   <TableHead>Created</TableHead><TableHead>Type</TableHead><TableHead>Reference</TableHead>
-                  <TableHead>Status</TableHead><TableHead>Attempts</TableHead><TableHead></TableHead>
+                  <TableHead>Status</TableHead><TableHead>Attempts</TableHead><TableHead>Next try</TableHead>
+                  <TableHead>Last error</TableHead><TableHead></TableHead>
                 </TableRow></TableHeader>
                 <TableBody>
-                  {queue.length === 0 && <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-8">Queue empty.</TableCell></TableRow>}
+                  {queue.length === 0 && <TableRow><TableCell colSpan={8} className="text-center text-muted-foreground py-8">Queue empty.</TableCell></TableRow>}
                   {queue.map(q => (
                     <TableRow key={q.id}>
                       <TableCell className="text-xs whitespace-nowrap">{new Date(q.created_at).toLocaleString()}</TableCell>
                       <TableCell><Badge variant="outline">{q.document_type}</Badge></TableCell>
                       <TableCell className="font-mono text-xs">{q.reference}</TableCell>
                       <TableCell>
-                        <Badge variant={q.status === 'sent' ? 'default' : q.status === 'failed' ? 'destructive' : 'secondary'}>{q.status}</Badge>
+                        <Badge variant={q.status === 'sent' ? 'default' : q.status === 'failed' ? 'destructive' : q.status === 'dead' ? 'destructive' : 'secondary'}>{q.status}</Badge>
                       </TableCell>
-                      <TableCell className="text-xs">{q.attempts}</TableCell>
+                      <TableCell className="text-xs">{q.attempts}/{q.max_attempts || 6}</TableCell>
+                      <TableCell className="text-xs whitespace-nowrap">{q.next_attempt_at ? new Date(q.next_attempt_at).toLocaleString() : '—'}</TableCell>
+                      <TableCell className="text-xs max-w-[180px] truncate text-destructive">{q.last_error || '—'}</TableCell>
                       <TableCell>
                         {q.status !== 'sent' && canApprove && (
-                          <Button size="sm" variant="outline" onClick={() => markSent(q.id)}>
-                            <CheckCircle2 className="w-3.5 h-3.5 mr-1" /> Mark sent
+                          <Button size="sm" variant="outline" onClick={() => requeue(q.id)}>
+                            <Repeat className="w-3.5 h-3.5 mr-1" /> Retry
                           </Button>
                         )}
                       </TableCell>

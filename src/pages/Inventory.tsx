@@ -16,6 +16,7 @@ import ProductQRCode from '@/components/ProductQRCode';
 import TransfersList from '@/components/inventory/TransfersList';
 import AssetsList from '@/components/inventory/AssetsList';
 import AlertsPanel from '@/components/inventory/AlertsPanel';
+import ReorderSuggestions from '@/components/inventory/ReorderSuggestions';
 import ImportExportPanel from '@/components/inventory/ImportExportPanel';
 import StockTransferDialog from '@/components/inventory/StockTransferDialog';
 import AssetFormDialog from '@/components/inventory/AssetFormDialog';
@@ -203,7 +204,7 @@ export default function Inventory() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid grid-cols-4 w-full max-w-2xl">
+        <TabsList className="grid grid-cols-5 w-full max-w-3xl">
           <TabsTrigger value="products" className="gap-1.5 text-xs"><Package className="w-3.5 h-3.5" /> Products</TabsTrigger>
           <TabsTrigger value="alerts" className="gap-1.5 text-xs relative">
             <Bell className="w-3.5 h-3.5" /> Intelligence
@@ -213,6 +214,7 @@ export default function Inventory() {
               </span>
             )}
           </TabsTrigger>
+          <TabsTrigger value="reorder" className="gap-1.5 text-xs"><Truck className="w-3.5 h-3.5" /> Reorder AI</TabsTrigger>
           <TabsTrigger value="transfers" className="gap-1.5 text-xs"><Truck className="w-3.5 h-3.5" /> Transfers</TabsTrigger>
           <TabsTrigger value="assets" className="gap-1.5 text-xs"><Building2 className="w-3.5 h-3.5" /> Assets</TabsTrigger>
         </TabsList>
@@ -324,6 +326,10 @@ export default function Inventory() {
 
         <TabsContent value="alerts" className="pt-4">
           <AlertsPanel refreshKey={refreshKey} />
+        </TabsContent>
+
+        <TabsContent value="reorder" className="pt-4">
+          <ReorderSuggestions />
         </TabsContent>
 
         <TabsContent value="transfers" className="pt-4">
