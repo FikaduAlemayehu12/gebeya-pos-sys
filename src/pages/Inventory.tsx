@@ -328,6 +328,10 @@ export default function Inventory() {
           <AlertsPanel refreshKey={refreshKey} />
         </TabsContent>
 
+        <TabsContent value="reorder" className="pt-4">
+          <ReorderSuggestions />
+        </TabsContent>
+
         <TabsContent value="transfers" className="pt-4">
           <TransfersList />
         </TabsContent>
