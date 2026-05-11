@@ -647,3 +647,38 @@ function RegionalTab() {
     </div>
   );
 }
+
+/* ───────── Branch logo uploader ───────── */
+function BranchLogoUploader({ value, onChange, branchCode }: { value: string; onChange: (url: string) => void; branchCode: string }) {
+  const { toast } = useToast();
+  const [busy, setBusy] = useState(false);
+
+  const upload = async (file: File) => {
+    if (file.size > 4 * 1024 * 1024) { toast({ title: 'Max 4 MB', variant: 'destructive' }); return; }
+    setBusy(true);
+    const ext = file.name.split('.').pop() || 'png';
+    const path = `branch-logos/${(branchCode || 'branch').toLowerCase().replace(/[^a-z0-9-]/g,'-')}-${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from('asset-images').upload(path, file, { upsert: true, contentType: file.type });
+    if (error) { setBusy(false); toast({ title: 'Upload failed', description: error.message, variant: 'destructive' }); return; }
+    const { data } = supabase.storage.from('asset-images').getPublicUrl(path);
+    onChange(data.publicUrl);
+    setBusy(false);
+    toast({ title: 'Logo uploaded' });
+  };
+
+  return (
+    <section className="space-y-2">
+      <h3 className="text-sm font-semibold text-foreground border-b pb-1">Branch / Company Logo</h3>
+      <div className="flex items-center gap-4">
+        <div className="w-24 h-24 rounded-lg border-2 border-dashed flex items-center justify-center bg-muted/30 overflow-hidden">
+          {value ? <img src={value} alt="Logo" className="w-full h-full object-contain" /> : <span className="text-xs text-muted-foreground">No logo</span>}
+        </div>
+        <div className="space-y-2">
+          <Input type="file" accept="image/*" disabled={busy} onChange={(e) => e.target.files?.[0] && upload(e.target.files[0])} />
+          {value && <Button type="button" size="sm" variant="ghost" onClick={() => onChange('')}>Remove</Button>}
+          <p className="text-[11px] text-muted-foreground">PNG/JPG, max 4 MB. Used on receipts and PDFs.</p>
+        </div>
+      </div>
+    </section>
+  );
+}
