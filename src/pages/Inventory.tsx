@@ -16,6 +16,7 @@ import ProductQRCode from '@/components/ProductQRCode';
 import TransfersList from '@/components/inventory/TransfersList';
 import AssetsList from '@/components/inventory/AssetsList';
 import AlertsPanel from '@/components/inventory/AlertsPanel';
+import ReorderSuggestions from '@/components/inventory/ReorderSuggestions';
 import ImportExportPanel from '@/components/inventory/ImportExportPanel';
 import StockTransferDialog from '@/components/inventory/StockTransferDialog';
 import AssetFormDialog from '@/components/inventory/AssetFormDialog';
