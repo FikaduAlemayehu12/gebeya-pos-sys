@@ -757,6 +757,7 @@ export type Database = {
           gps_lng: number | null
           id: string
           is_active: boolean
+          logo_url: string | null
           manager_user_id: string | null
           name: string
           opening_hours: string | null
@@ -787,6 +788,7 @@ export type Database = {
           gps_lng?: number | null
           id?: string
           is_active?: boolean
+          logo_url?: string | null
           manager_user_id?: string | null
           name: string
           opening_hours?: string | null
@@ -817,6 +819,7 @@ export type Database = {
           gps_lng?: number | null
           id?: string
           is_active?: boolean
+          logo_url?: string | null
           manager_user_id?: string | null
           name?: string
           opening_hours?: string | null
@@ -2116,12 +2119,16 @@ export type Database = {
           document_id: string
           document_type: string
           id: string
+          last_attempt_at: string | null
           last_error: string | null
+          max_attempts: number
+          next_attempt_at: string | null
           payload: Json
           reference: string
           sent_at: string | null
           status: string
           tenant_id: string | null
+          worker_id: string | null
         }
         Insert: {
           attempts?: number
@@ -2129,12 +2136,16 @@ export type Database = {
           document_id: string
           document_type: string
           id?: string
+          last_attempt_at?: string | null
           last_error?: string | null
+          max_attempts?: number
+          next_attempt_at?: string | null
           payload: Json
           reference: string
           sent_at?: string | null
           status?: string
           tenant_id?: string | null
+          worker_id?: string | null
         }
         Update: {
           attempts?: number
@@ -2142,12 +2153,16 @@ export type Database = {
           document_id?: string
           document_type?: string
           id?: string
+          last_attempt_at?: string | null
           last_error?: string | null
+          max_attempts?: number
+          next_attempt_at?: string | null
           payload?: Json
           reference?: string
           sent_at?: string | null
           status?: string
           tenant_id?: string | null
+          worker_id?: string | null
         }
         Relationships: [
           {
@@ -2960,6 +2975,89 @@ export type Database = {
           },
           {
             foreignKeyName: "product_categories_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_disposals: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          batch_id: string | null
+          branch_id: string | null
+          created_at: string
+          disposal_type: string
+          id: string
+          notes: string | null
+          product_id: string
+          quantity: number
+          reason: string
+          requested_by: string | null
+          status: string
+          tenant_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          batch_id?: string | null
+          branch_id?: string | null
+          created_at?: string
+          disposal_type?: string
+          id?: string
+          notes?: string | null
+          product_id: string
+          quantity: number
+          reason: string
+          requested_by?: string | null
+          status?: string
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          batch_id?: string | null
+          branch_id?: string | null
+          created_at?: string
+          disposal_type?: string
+          id?: string
+          notes?: string | null
+          product_id?: string
+          quantity?: number
+          reason?: string
+          requested_by?: string | null
+          status?: string
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_disposals_batch_id_fkey"
+            columns: ["batch_id"]
+            isOneToOne: false
+            referencedRelation: "product_batches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_disposals_branch_id_fkey"
+            columns: ["branch_id"]
+            isOneToOne: false
+            referencedRelation: "branches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_disposals_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_disposals_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "companies"
@@ -4357,10 +4455,12 @@ export type Database = {
       }
       belongs_to_company: { Args: { _company_id: string }; Returns: boolean }
       current_tenant_id: { Args: never; Returns: string }
+      detect_slow_moving: { Args: { _days?: number }; Returns: number }
       execute_sale_void: {
         Args: { _approver?: string; _reason: string; _sale_id: string }
         Returns: string
       }
+      generate_expiry_alerts: { Args: never; Returns: number }
       get_employee_id_for_user: { Args: { _user_id: string }; Returns: string }
       has_role: {
         Args: {
@@ -4378,6 +4478,7 @@ export type Database = {
       is_hr_staff: { Args: { _user_id: string }; Returns: boolean }
       is_procurement_staff: { Args: { _user_id: string }; Returns: boolean }
       is_super_admin: { Args: { _user_id: string }; Returns: boolean }
+      mor_requeue: { Args: { _id: string }; Returns: undefined }
       post_journal_entry: {
         Args: {
           _description: string
