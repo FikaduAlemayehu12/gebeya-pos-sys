@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
+import EmployeeDocumentsSection from './EmployeeDocumentsSection';
 
 interface Branch { id: string; name: string }
 interface Props { open: boolean; onClose: () => void; onSaved: () => void; employee?: any | null; branches: Branch[] }
