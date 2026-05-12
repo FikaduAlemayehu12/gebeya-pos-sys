@@ -19,7 +19,7 @@ const blank = {
   base_salary: '0', transport_allowance: '0', housing_allowance: '0',
   position_allowance: '0', other_allowance: '0',
   bank_name: '', bank_account: '', tin_number: '', pension_number: '',
-  emergency_contact_name: '', emergency_contact_phone: '', address: '',
+  emergency_contact_name: '', emergency_contact_phone: '', address: '', photo_url: '',
 };
 
 export default function EmployeeFormDialog({ open, onClose, onSaved, employee, branches }: Props) {
