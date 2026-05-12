@@ -335,7 +335,7 @@ export default function CheckInOutHero({ onChange }: { onChange?: () => void }) 
             <div className="flex flex-col sm:flex-row gap-2">
               <Button
                 size="lg"
-                onClick={doCheckIn}
+                onClick={() => doCheckIn()}
                 disabled={busy || !!openSession}
                 className="flex-1 h-14 text-base gap-2 bg-emerald-600 hover:bg-emerald-700 text-white"
               >
