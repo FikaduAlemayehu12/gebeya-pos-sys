@@ -1322,6 +1322,59 @@ export type Database = {
           },
         ]
       }
+      employee_documents: {
+        Row: {
+          created_at: string
+          doc_type: string
+          employee_id: string
+          file_path: string
+          file_url: string
+          id: string
+          mime_type: string | null
+          size_bytes: number | null
+          tenant_id: string | null
+          title: string
+          updated_at: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          doc_type: string
+          employee_id: string
+          file_path: string
+          file_url: string
+          id?: string
+          mime_type?: string | null
+          size_bytes?: number | null
+          tenant_id?: string | null
+          title: string
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          doc_type?: string
+          employee_id?: string
+          file_path?: string
+          file_url?: string
+          id?: string
+          mime_type?: string | null
+          size_bytes?: number | null
+          tenant_id?: string | null
+          title?: string
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employee_documents_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       employee_loans: {
         Row: {
           approved_by: string | null
