@@ -152,9 +152,11 @@ export default function CheckInOutHero({ onChange }: { onChange?: () => void }) 
     try {
       let geo: Awaited<ReturnType<typeof getGeo>> = null;
       if (settings.require_geo || settings.office_lat) {
-        geo = await getGeo();
-        if (settings.require_geo && !geo) {
-          toast({ title: 'Location required', description: 'Allow location access to check in', variant: 'destructive' });
+        const g = await getGeo();
+        if (g && !(g as any).error) {
+          geo = g;
+        } else if (settings.require_geo) {
+          toast({ title: 'Location required', description: (g as any)?.error || 'Allow location access to check in', variant: 'destructive' });
           return;
         }
         if (geo && settings.office_lat && settings.office_lng) {
