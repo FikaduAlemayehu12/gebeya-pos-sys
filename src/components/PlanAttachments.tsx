@@ -34,32 +34,96 @@ function shortName(path: string) {
   return base.replace(/^\d+-/, '');
 }
 
+function isImage(name: string) {
+  return /\.(png|jpe?g|webp|gif|avif)$/i.test(name);
+}
+
 export function AttachmentList({ paths, onRemove, readOnly }: { paths: string[]; onRemove?: (p: string) => void; readOnly?: boolean }) {
+  const { toast } = useToast();
   const [busy, setBusy] = useState<string | null>(null);
+  const [urls, setUrls] = useState<Record<string, string>>({});
+
+  // Pre-sign all paths so images can render inline
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const missing = paths.filter((p) => !urls[p]);
+      if (!missing.length) return;
+      const next: Record<string, string> = { ...urls };
+      const res = await supabase.storage.from('plan-attachments').createSignedUrls(missing, 3600);
+      if (cancelled) return;
+      (res.data || []).forEach((row: any) => {
+        if (row?.path && row?.signedUrl) next[row.path] = row.signedUrl;
+      });
+      setUrls(next);
+    })();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paths.join('|')]);
+
   const open = async (p: string) => {
-    setBusy(p);
-    const { data, error } = await supabase.storage.from('plan-attachments').createSignedUrl(p, 300);
-    setBusy(null);
-    if (error || !data?.signedUrl) return;
-    window.open(data.signedUrl, '_blank', 'noopener');
+    let url = urls[p];
+    if (!url) {
+      setBusy(p);
+      const { data, error } = await supabase.storage.from('plan-attachments').createSignedUrl(p, 300);
+      setBusy(null);
+      if (error || !data?.signedUrl) {
+        toast({ title: 'Cannot open file', description: error?.message || 'Missing or unauthorized', variant: 'destructive' });
+        return;
+      }
+      url = data.signedUrl;
+    }
+    window.open(url, '_blank', 'noopener');
   };
+
   if (!paths.length) return null;
+
+  const images = paths.filter(isImage);
+  const docs = paths.filter((p) => !isImage(p));
+
   return (
-    <div className="flex flex-wrap gap-1.5">
-      {paths.map((p) => (
-        <Badge key={p} variant="secondary" className="gap-1.5 pr-1 max-w-[260px]">
-          <button type="button" onClick={() => open(p)} className="flex items-center gap-1.5 truncate">
-            {busy === p ? <Loader2 className="w-3 h-3 animate-spin" /> : iconFor(p)}
-            <span className="truncate text-[11px]">{shortName(p)}</span>
-            <Download className="w-3 h-3 opacity-60" />
-          </button>
-          {!readOnly && onRemove && (
-            <button type="button" onClick={() => onRemove(p)} className="hover:text-destructive">
-              <X className="w-3 h-3" />
-            </button>
-          )}
-        </Badge>
-      ))}
+    <div className="space-y-2">
+      {images.length > 0 && (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+          {images.map((p) => (
+            <div key={p} className="relative group rounded-md overflow-hidden border bg-muted">
+              <button type="button" onClick={() => open(p)} className="block w-full aspect-square">
+                {urls[p] ? (
+                  <img src={urls[p]} alt={shortName(p)} loading="lazy" className="w-full h-full object-cover transition-transform group-hover:scale-105" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center"><Loader2 className="w-4 h-4 animate-spin text-muted-foreground" /></div>
+                )}
+              </button>
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-1 text-[10px] text-white truncate">
+                {shortName(p)}
+              </div>
+              {!readOnly && onRemove && (
+                <button type="button" onClick={() => onRemove(p)} className="absolute top-1 right-1 bg-background/80 rounded-full p-0.5 hover:text-destructive">
+                  <X className="w-3 h-3" />
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+      {docs.length > 0 && (
+        <div className="flex flex-wrap gap-1.5">
+          {docs.map((p) => (
+            <Badge key={p} variant="secondary" className="gap-1.5 pr-1 max-w-[260px]">
+              <button type="button" onClick={() => open(p)} className="flex items-center gap-1.5 truncate">
+                {busy === p ? <Loader2 className="w-3 h-3 animate-spin" /> : iconFor(p)}
+                <span className="truncate text-[11px]">{shortName(p)}</span>
+                <Download className="w-3 h-3 opacity-60" />
+              </button>
+              {!readOnly && onRemove && (
+                <button type="button" onClick={() => onRemove(p)} className="hover:text-destructive">
+                  <X className="w-3 h-3" />
+                </button>
+              )}
+            </Badge>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
