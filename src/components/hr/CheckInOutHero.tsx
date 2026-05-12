@@ -39,7 +39,8 @@ function distanceMeters(lat1: number, lng1: number, lat2: number, lng2: number) 
 }
 
 export default function CheckInOutHero({ onChange }: { onChange?: () => void }) {
-  const { user } = useAuth();
+  const { user, hasRole } = useAuth();
+  const isAdminOrHr = hasRole('admin') || hasRole('hr_admin') || hasRole('payroll_officer');
   const { toast } = useToast();
   const [now, setNow] = useState(new Date());
   const [employee, setEmployee] = useState<any>(null);
@@ -47,6 +48,7 @@ export default function CheckInOutHero({ onChange }: { onChange?: () => void }) 
   const [today, setToday] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
+  const [lastBlockReason, setLastBlockReason] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const pendingSelfie = useRef<File | null>(null);
   const [pendingAction, setPendingAction] = useState<'in' | null>(null);
