@@ -176,6 +176,15 @@ export default function EmployeeFormDialog({ open, onClose, onSaved, employee, b
             </Select>
           </div>
         </div>
+
+        <div className="mt-4 pt-3 border-t">
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">Photo & Documents</p>
+          <EmployeeDocumentsSection
+            employeeId={employee?.id || null}
+            photoUrl={form.photo_url}
+            onPhotoChange={(url) => set('photo_url', url)}
+          />
+        </div>
         <div className="flex justify-end gap-2 pt-4 border-t">
           <Button variant="outline" onClick={onClose}>Cancel</Button>
           <Button onClick={handleSave} disabled={saving} className="gradient-primary text-primary-foreground">
