@@ -103,14 +103,35 @@ export default function CheckInOutHero({ onChange }: { onChange?: () => void }) 
     await load();
   };
 
-  const getGeo = (): Promise<{ lat: number; lng: number; acc: number } | null> =>
+  const getGeo = (): Promise<{ lat: number; lng: number; acc: number; error?: string } | null> =>
     new Promise((resolve) => {
-      if (!('geolocation' in navigator)) return resolve(null);
-      navigator.geolocation.getCurrentPosition(
-        (p) => resolve({ lat: p.coords.latitude, lng: p.coords.longitude, acc: p.coords.accuracy }),
-        () => resolve(null),
-        { enableHighAccuracy: true, timeout: 8000 },
-      );
+      if (typeof window === 'undefined' || !('geolocation' in navigator)) {
+        return resolve({ lat: 0, lng: 0, acc: 0, error: 'Geolocation not supported by this browser' } as any);
+      }
+      if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost') {
+        return resolve({ lat: 0, lng: 0, acc: 0, error: 'Location requires HTTPS' } as any);
+      }
+      const tryGet = (highAccuracy: boolean) => {
+        navigator.geolocation.getCurrentPosition(
+          (p) => resolve({ lat: p.coords.latitude, lng: p.coords.longitude, acc: p.coords.accuracy }),
+          (err) => {
+            if (highAccuracy && err.code !== err.PERMISSION_DENIED) {
+              tryGet(false); // fallback
+              return;
+            }
+            const msg = err.code === err.PERMISSION_DENIED
+              ? 'Location permission denied — enable it in your browser settings'
+              : err.code === err.POSITION_UNAVAILABLE
+              ? 'Location unavailable — check device GPS/Wi-Fi'
+              : err.code === err.TIMEOUT
+              ? 'Location request timed out — try again'
+              : 'Could not get location';
+            resolve({ lat: 0, lng: 0, acc: 0, error: msg } as any);
+          },
+          { enableHighAccuracy: highAccuracy, timeout: highAccuracy ? 10000 : 20000, maximumAge: 60000 },
+        );
+      };
+      tryGet(true);
     });
 
   const uploadSelfie = async (file: File): Promise<string | null> => {
