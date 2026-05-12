@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
+import EmployeeDocumentsSection from './EmployeeDocumentsSection';
 
 interface Branch { id: string; name: string }
 interface Props { open: boolean; onClose: () => void; onSaved: () => void; employee?: any | null; branches: Branch[] }
@@ -18,7 +19,7 @@ const blank = {
   base_salary: '0', transport_allowance: '0', housing_allowance: '0',
   position_allowance: '0', other_allowance: '0',
   bank_name: '', bank_account: '', tin_number: '', pension_number: '',
-  emergency_contact_name: '', emergency_contact_phone: '', address: '',
+  emergency_contact_name: '', emergency_contact_phone: '', address: '', photo_url: '',
 };
 
 export default function EmployeeFormDialog({ open, onClose, onSaved, employee, branches }: Props) {
@@ -174,6 +175,15 @@ export default function EmployeeFormDialog({ open, onClose, onSaved, employee, b
               </SelectContent>
             </Select>
           </div>
+        </div>
+
+        <div className="mt-4 pt-3 border-t">
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">Photo & Documents</p>
+          <EmployeeDocumentsSection
+            employeeId={employee?.id || null}
+            photoUrl={form.photo_url}
+            onPhotoChange={(url) => set('photo_url', url)}
+          />
         </div>
         <div className="flex justify-end gap-2 pt-4 border-t">
           <Button variant="outline" onClick={onClose}>Cancel</Button>
