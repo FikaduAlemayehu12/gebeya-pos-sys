@@ -39,7 +39,8 @@ function distanceMeters(lat1: number, lng1: number, lat2: number, lng2: number) 
 }
 
 export default function CheckInOutHero({ onChange }: { onChange?: () => void }) {
-  const { user } = useAuth();
+  const { user, hasRole } = useAuth();
+  const isAdminOrHr = hasRole('admin') || hasRole('hr_admin') || hasRole('payroll_officer');
   const { toast } = useToast();
   const [now, setNow] = useState(new Date());
   const [employee, setEmployee] = useState<any>(null);
@@ -47,6 +48,7 @@ export default function CheckInOutHero({ onChange }: { onChange?: () => void }) 
   const [today, setToday] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
+  const [lastBlockReason, setLastBlockReason] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const pendingSelfie = useRef<File | null>(null);
   const [pendingAction, setPendingAction] = useState<'in' | null>(null);
@@ -146,30 +148,36 @@ export default function CheckInOutHero({ onChange }: { onChange?: () => void }) 
     return data.publicUrl;
   };
 
-  const doCheckIn = async () => {
+  const doCheckIn = async (opts: { override?: boolean } = {}) => {
     if (!employee) return;
+    const override = !!opts.override && isAdminOrHr;
     setBusy(true);
+    setLastBlockReason(null);
     try {
-      let geo: Awaited<ReturnType<typeof getGeo>> = null;
+      let geo: { lat: number; lng: number; acc: number } | null = null;
       if (settings.require_geo || settings.office_lat) {
         const g = await getGeo();
         if (g && !(g as any).error) {
-          geo = g;
-        } else if (settings.require_geo) {
-          toast({ title: 'Location required', description: (g as any)?.error || 'Allow location access to check in', variant: 'destructive' });
+          geo = g as any;
+        } else if (settings.require_geo && !override) {
+          const reason = (g as any)?.error || 'Allow location access to check in';
+          setLastBlockReason(reason);
+          toast({ title: 'Location required', description: reason, variant: 'destructive' });
           return;
         }
         if (geo && settings.office_lat && settings.office_lng) {
           const d = distanceMeters(geo.lat, geo.lng, settings.office_lat, settings.office_lng);
-          if (d > settings.allowed_radius_m) {
-            toast({ title: 'Outside allowed area', description: `${Math.round(d)}m from office (limit ${settings.allowed_radius_m}m)`, variant: 'destructive' });
+          if (d > settings.allowed_radius_m && !override) {
+            const reason = `${Math.round(d)}m from office (limit ${settings.allowed_radius_m}m)`;
+            setLastBlockReason(reason);
+            toast({ title: 'Outside allowed area', description: reason, variant: 'destructive' });
             return;
           }
         }
       }
 
       let selfieUrl: string | null = null;
-      if (settings.require_selfie) {
+      if (settings.require_selfie && !override) {
         if (!pendingSelfie.current) {
           setPendingAction('in');
           fileRef.current?.click();
@@ -194,12 +202,14 @@ export default function CheckInOutHero({ onChange }: { onChange?: () => void }) 
         status: 'present', recorded_by: user?.id,
         geo_lat: geo?.lat ?? null, geo_lng: geo?.lng ?? null, geo_accuracy: geo?.acc ?? null,
         selfie_url: selfieUrl ?? '', is_late: isLate,
-        session_number: sessions + 1, check_in_method: geo ? 'geo' : 'manual',
+        session_number: sessions + 1,
+        check_in_method: override ? 'manual_override' : geo ? 'geo' : 'manual',
       } as any);
       if (error) throw error;
-      toast({ title: 'Checked in', description: isLate ? 'Marked as late' : 'On time' });
+      toast({ title: 'Checked in', description: override ? 'Admin override applied' : isLate ? 'Marked as late' : 'On time' });
       pendingSelfie.current = null;
       setPendingAction(null);
+      setLastBlockReason(null);
       await load(); onChange?.();
     } catch (e: any) {
       toast({ title: 'Check-in failed', description: e.message || String(e), variant: 'destructive' });
@@ -325,7 +335,7 @@ export default function CheckInOutHero({ onChange }: { onChange?: () => void }) 
             <div className="flex flex-col sm:flex-row gap-2">
               <Button
                 size="lg"
-                onClick={doCheckIn}
+                onClick={() => doCheckIn()}
                 disabled={busy || !!openSession}
                 className="flex-1 h-14 text-base gap-2 bg-emerald-600 hover:bg-emerald-700 text-white"
               >
@@ -354,6 +364,17 @@ export default function CheckInOutHero({ onChange }: { onChange?: () => void }) 
               </Button>
               <input ref={fileRef} type="file" accept="image/*" capture="user" className="hidden" onChange={onFileChosen} />
             </div>
+
+            {lastBlockReason && isAdminOrHr && (
+              <div className="rounded-md border border-amber-500/40 bg-amber-500/5 p-3 text-xs flex items-center justify-between gap-2">
+                <span className="text-amber-700 dark:text-amber-400">
+                  Blocked: {lastBlockReason}. As admin/HR you can override.
+                </span>
+                <Button size="sm" variant="outline" onClick={() => doCheckIn({ override: true })} disabled={busy}>
+                  Override & Check in
+                </Button>
+              </div>
+            )}
 
             {today.length > 0 && (
               <div className="border-t pt-3 space-y-1">
