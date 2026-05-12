@@ -365,6 +365,17 @@ export default function CheckInOutHero({ onChange }: { onChange?: () => void }) 
               <input ref={fileRef} type="file" accept="image/*" capture="user" className="hidden" onChange={onFileChosen} />
             </div>
 
+            {lastBlockReason && isAdminOrHr && (
+              <div className="rounded-md border border-amber-500/40 bg-amber-500/5 p-3 text-xs flex items-center justify-between gap-2">
+                <span className="text-amber-700 dark:text-amber-400">
+                  Blocked: {lastBlockReason}. As admin/HR you can override.
+                </span>
+                <Button size="sm" variant="outline" onClick={() => doCheckIn({ override: true })} disabled={busy}>
+                  Override & Check in
+                </Button>
+              </div>
+            )}
+
             {today.length > 0 && (
               <div className="border-t pt-3 space-y-1">
                 <div className="text-[10px] uppercase tracking-wide text-muted-foreground">Today's sessions</div>
