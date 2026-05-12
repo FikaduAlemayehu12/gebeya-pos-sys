@@ -148,30 +148,36 @@ export default function CheckInOutHero({ onChange }: { onChange?: () => void }) 
     return data.publicUrl;
   };
 
-  const doCheckIn = async () => {
+  const doCheckIn = async (opts: { override?: boolean } = {}) => {
     if (!employee) return;
+    const override = !!opts.override && isAdminOrHr;
     setBusy(true);
+    setLastBlockReason(null);
     try {
-      let geo: Awaited<ReturnType<typeof getGeo>> = null;
+      let geo: { lat: number; lng: number; acc: number } | null = null;
       if (settings.require_geo || settings.office_lat) {
         const g = await getGeo();
         if (g && !(g as any).error) {
-          geo = g;
-        } else if (settings.require_geo) {
-          toast({ title: 'Location required', description: (g as any)?.error || 'Allow location access to check in', variant: 'destructive' });
+          geo = g as any;
+        } else if (settings.require_geo && !override) {
+          const reason = (g as any)?.error || 'Allow location access to check in';
+          setLastBlockReason(reason);
+          toast({ title: 'Location required', description: reason, variant: 'destructive' });
           return;
         }
         if (geo && settings.office_lat && settings.office_lng) {
           const d = distanceMeters(geo.lat, geo.lng, settings.office_lat, settings.office_lng);
-          if (d > settings.allowed_radius_m) {
-            toast({ title: 'Outside allowed area', description: `${Math.round(d)}m from office (limit ${settings.allowed_radius_m}m)`, variant: 'destructive' });
+          if (d > settings.allowed_radius_m && !override) {
+            const reason = `${Math.round(d)}m from office (limit ${settings.allowed_radius_m}m)`;
+            setLastBlockReason(reason);
+            toast({ title: 'Outside allowed area', description: reason, variant: 'destructive' });
             return;
           }
         }
       }
 
       let selfieUrl: string | null = null;
-      if (settings.require_selfie) {
+      if (settings.require_selfie && !override) {
         if (!pendingSelfie.current) {
           setPendingAction('in');
           fileRef.current?.click();
@@ -196,12 +202,14 @@ export default function CheckInOutHero({ onChange }: { onChange?: () => void }) 
         status: 'present', recorded_by: user?.id,
         geo_lat: geo?.lat ?? null, geo_lng: geo?.lng ?? null, geo_accuracy: geo?.acc ?? null,
         selfie_url: selfieUrl ?? '', is_late: isLate,
-        session_number: sessions + 1, check_in_method: geo ? 'geo' : 'manual',
+        session_number: sessions + 1,
+        check_in_method: override ? 'manual_override' : geo ? 'geo' : 'manual',
       } as any);
       if (error) throw error;
-      toast({ title: 'Checked in', description: isLate ? 'Marked as late' : 'On time' });
+      toast({ title: 'Checked in', description: override ? 'Admin override applied' : isLate ? 'Marked as late' : 'On time' });
       pendingSelfie.current = null;
       setPendingAction(null);
+      setLastBlockReason(null);
       await load(); onChange?.();
     } catch (e: any) {
       toast({ title: 'Check-in failed', description: e.message || String(e), variant: 'destructive' });
