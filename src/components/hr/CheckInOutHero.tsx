@@ -210,8 +210,11 @@ export default function CheckInOutHero({ onChange }: { onChange?: () => void }) 
     if (!openSession) return;
     setBusy(true);
     try {
-      let geo: Awaited<ReturnType<typeof getGeo>> = null;
-      if (settings.require_geo) geo = await getGeo();
+      let geo: { lat: number; lng: number; acc: number } | null = null;
+      if (settings.require_geo) {
+        const g = await getGeo();
+        if (g && !(g as any).error) geo = g as any;
+      }
       const nowDate = new Date();
       const inTime = new Date(openSession.clock_in);
       const inDay = inTime.toISOString().slice(0, 10);
