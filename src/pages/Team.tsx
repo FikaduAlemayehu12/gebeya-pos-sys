@@ -24,7 +24,7 @@ export default function Team() {
 
   const filtered = emps.filter((e) => {
     const s = q.toLowerCase();
-    if (dept !== 'all' && e.department_id !== dept) return false;
+    if (dept !== 'all' && e.department !== dept) return false;
     return !s || e.full_name?.toLowerCase().includes(s) || e.position?.toLowerCase().includes(s) || e.employee_code?.toLowerCase().includes(s);
   });
 
@@ -50,7 +50,7 @@ export default function Team() {
               <div className="flex-1 min-w-0">
                 <div className="font-semibold truncate">{e.full_name}</div>
                 <div className="text-xs text-muted-foreground truncate">{e.position || '—'}</div>
-                <div className="text-[11px] text-muted-foreground">{depts[e.department_id || ''] || 'Unassigned'} · {e.employee_code}</div>
+                <div className="text-[11px] text-muted-foreground">{depts[e.department || ''] || e.department || 'Unassigned'} · {e.employee_code}</div>
                 <div className="flex flex-col gap-0.5 mt-1 text-[11px] text-muted-foreground">
                   {e.email && <span className="flex items-center gap-1"><Mail className="w-3 h-3" /> {e.email}</span>}
                   {e.phone && <span className="flex items-center gap-1"><Phone className="w-3 h-3" /> {e.phone}</span>}

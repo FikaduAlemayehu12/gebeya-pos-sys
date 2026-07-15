@@ -23,9 +23,9 @@ export default function Departments() {
   async function load() {
     const { data } = await supabase.from('departments').select('*').order('name');
     setDepts((data || []) as Dept[]);
-    const { data: emps } = await supabase.from('employees').select('department_id');
+    const { data: emps } = await supabase.from('employees').select('department');
     const c: Record<string, number> = {};
-    (emps || []).forEach((e: any) => { if (e.department_id) c[e.department_id] = (c[e.department_id] || 0) + 1; });
+    (emps || []).forEach((e: any) => { if (e.department) c[e.department] = (c[e.department] || 0) + 1; });
     setCounts(c);
     const { data: p } = await supabase.from('profiles').select('user_id, full_name');
     setUsers((p || []) as any);
@@ -88,7 +88,7 @@ export default function Departments() {
                 <p className="text-xs text-muted-foreground">{d.description}</p>
               </div>
               <div className="flex items-center gap-4 text-sm">
-                <span className="flex items-center gap-1"><Users className="w-4 h-4" /> {counts[d.id] || 0}</span>
+                <span className="flex items-center gap-1"><Users className="w-4 h-4" /> {counts[d.name] || 0}</span>
                 <span className="text-muted-foreground">Budget: {d.budget?.toLocaleString()} ETB</span>
                 <Button size="icon" variant="ghost" onClick={() => { setEditing(d); setOpen(true); }}><Pencil className="w-4 h-4" /></Button>
               </div>
@@ -99,7 +99,7 @@ export default function Departments() {
                   <div key={c.id} className="border rounded-md p-2 flex justify-between items-center">
                     <div>
                       <div className="text-sm font-medium">{c.name}</div>
-                      <div className="text-[11px] text-muted-foreground">{counts[c.id] || 0} members</div>
+                      <div className="text-[11px] text-muted-foreground">{counts[c.name] || 0} members</div>
                     </div>
                     <Button size="icon" variant="ghost" onClick={() => { setEditing(c); setOpen(true); }}><Pencil className="w-3 h-3" /></Button>
                   </div>
