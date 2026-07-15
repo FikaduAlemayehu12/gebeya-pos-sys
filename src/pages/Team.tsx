@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Mail, Phone, UsersRound } from 'lucide-react';
 
-type Emp = { id: string; employee_code: string; full_name: string; email: string | null; phone: string | null; position: string | null; department_id: string | null; photo_url?: string | null };
+type Emp = { id: string; employee_code: string; full_name: string; email: string | null; phone: string | null; position: string | null; department: string | null; photo_url?: string | null };
 
 export default function Team() {
   const [emps, setEmps] = useState<Emp[]>([]);
