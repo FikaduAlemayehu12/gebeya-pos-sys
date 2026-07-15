@@ -3,7 +3,8 @@ import { Link, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, ShoppingCart, Package, Users, BarChart3,
   CreditCard, Menu, Bell, Search, LogOut, Shield, Briefcase,
-  Wallet, Truck, Building2, FileSearch, Sparkles, CalendarCheck, Target
+  Wallet, Truck, Building2, FileSearch, Sparkles, CalendarCheck, Target,
+  MessageCircle, TrendingUp, UsersRound, UserCircle, Coins
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
@@ -27,6 +28,12 @@ const NAV_ITEMS: { path: string; label: string; labelAm: string; icon: any; role
   { path: '/hr', label: 'HR & Payroll', labelAm: 'ሰራተኛ', icon: Briefcase, roles: ['admin', 'hr_admin', 'payroll_officer', 'manager', 'employee'] },
   { path: '/attendance', label: 'Attendance', labelAm: 'መገኘት', icon: CalendarCheck },
   { path: '/planning', label: 'Planning', labelAm: 'እቅድ', icon: Target },
+  { path: '/performance', label: 'Performance', labelAm: 'አፈጻጸም', icon: TrendingUp },
+  { path: '/salary', label: 'Salary', labelAm: 'ደሞዝ', icon: Coins, roles: ['admin', 'hr_admin', 'payroll_officer', 'manager', 'employee'] },
+  { path: '/departments', label: 'Departments', labelAm: 'ክፍሎች', icon: Building2, roles: ['admin', 'hr_admin', 'manager'] },
+  { path: '/team', label: 'Team', labelAm: 'ቡድን', icon: UsersRound },
+  { path: '/messages', label: 'Messages', labelAm: 'መልእክቶች', icon: MessageCircle },
+  { path: '/profile', label: 'Profile', labelAm: 'መገለጫ', icon: UserCircle },
   { path: '/finance', label: 'Finance', labelAm: 'ፋይናንስ', icon: Wallet, roles: ['admin', 'finance_manager', 'auditor'] },
   { path: '/procurement', label: 'Procurement', labelAm: 'ግዢ', icon: Truck, roles: ['admin', 'procurement', 'inventory_manager'] },
   { path: '/branches', label: 'Branches', labelAm: 'ቅርንጫፎች', icon: Building2, roles: ['admin', 'hr_admin', 'manager'] },

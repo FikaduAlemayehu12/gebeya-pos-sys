@@ -24,6 +24,12 @@ import Procurement from "@/pages/Procurement";
 import Branches from "@/pages/Branches";
 import Audit from "@/pages/Audit";
 import Copilot from "@/pages/Copilot";
+import Messages from "@/pages/Messages";
+import Departments from "@/pages/Departments";
+import Team from "@/pages/Team";
+import Profile from "@/pages/Profile";
+import Performance from "@/pages/Performance";
+import Salary from "@/pages/Salary";
 import { Loader2 } from "lucide-react";
 
 const queryClient = new QueryClient();
@@ -83,6 +89,12 @@ const AppRoutes = () => (
     <Route path="/branches" element={<ProtectedRoute roles={["admin", "hr_admin", "manager"]}><AppLayout><Branches /></AppLayout></ProtectedRoute>} />
     <Route path="/audit" element={<ProtectedRoute roles={["admin", "auditor"]}><AppLayout><Audit /></AppLayout></ProtectedRoute>} />
     <Route path="/copilot" element={<ProtectedRoute><AppLayout><Copilot /></AppLayout></ProtectedRoute>} />
+    <Route path="/messages" element={<ProtectedRoute><AppLayout><Messages /></AppLayout></ProtectedRoute>} />
+    <Route path="/departments" element={<ProtectedRoute><AppLayout><Departments /></AppLayout></ProtectedRoute>} />
+    <Route path="/team" element={<ProtectedRoute><AppLayout><Team /></AppLayout></ProtectedRoute>} />
+    <Route path="/profile" element={<ProtectedRoute><AppLayout><Profile /></AppLayout></ProtectedRoute>} />
+    <Route path="/performance" element={<ProtectedRoute><AppLayout><Performance /></AppLayout></ProtectedRoute>} />
+    <Route path="/salary" element={<ProtectedRoute roles={["admin","hr_admin","payroll_officer","manager","employee"]}><AppLayout><Salary /></AppLayout></ProtectedRoute>} />
     <Route path="/receipt/:receiptId" element={<TransactionView />} />
     <Route path="*" element={<NotFound />} />
   </Routes>
