@@ -15,10 +15,10 @@ export default function Team() {
 
   useEffect(() => {
     (async () => {
-      const { data } = await supabase.from('employees').select('id, employee_code, full_name, email, phone, position, department_id, photo_url').eq('status', 'active').order('full_name');
-      setEmps((data || []) as Emp[]);
+      const { data } = await supabase.from('employees').select('id, employee_code, full_name, email, phone, position, department, photo_url').eq('status', 'active').order('full_name');
+      setEmps(((data || []) as unknown) as Emp[]);
       const { data: d } = await supabase.from('departments').select('id, name');
-      setDepts(Object.fromEntries((d || []).map((x: any) => [x.id, x.name])));
+      setDepts(Object.fromEntries((d || []).map((x: any) => [x.name, x.name])));
     })();
   }, []);
 
